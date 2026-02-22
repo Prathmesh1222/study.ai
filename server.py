@@ -37,13 +37,97 @@ META_PATH = MODEL_DIR / "metadata.json"
 FLASHCARD_PATH = BASE_DIR / "flashcards.json"
 STATIC_DIR = BASE_DIR / "static"
 
-api_key = os.getenv("GEMINI_API_KEY")
-if not api_key:
-    print("❌ GEMINI_API_KEY not found in .env")
+# ==================================================
+# 1.5 MULTI-API KEY FALLBACK SYSTEM
+# ==================================================
+def load_api_keys():
+    """Load all API keys from .env (GEMINI_API_KEY, GEMINI_API_KEY_2, etc.)"""
+    keys = []
+    # Primary key
+    primary = os.getenv("GEMINI_API_KEY")
+    if primary:
+        keys.append(primary)
+    # Additional keys: GEMINI_API_KEY_2, GEMINI_API_KEY_3, ...
+    for i in range(2, 11):
+        key = os.getenv(f"GEMINI_API_KEY_{i}")
+        if key:
+            keys.append(key)
+    return keys
+
+API_KEYS = load_api_keys()
+if not API_KEYS:
+    print("❌ No GEMINI_API_KEY found in .env")
+    print("   Add at least one key: GEMINI_API_KEY=your_key")
+    print("   For fallback, add: GEMINI_API_KEY_2=another_key")
     exit(1)
 
-genai.configure(api_key=api_key)
-llm = genai.GenerativeModel("gemini-2.0-flash")
+print(f"🔑 Loaded {len(API_KEYS)} API key(s)")
+
+
+class LLMFallback:
+    """Manages multiple Gemini API keys with automatic fallback."""
+
+    def __init__(self, api_keys, model_name="gemini-2.0-flash"):
+        self.api_keys = api_keys
+        self.model_name = model_name
+        self.current_index = 0
+        self.models = []
+
+        # Pre-configure all models
+        for key in api_keys:
+            genai.configure(api_key=key)
+            model = genai.GenerativeModel(model_name)
+            self.models.append({"key": key, "model": model})
+
+        # Set initial active key
+        genai.configure(api_key=api_keys[0])
+        print(f"✅ Primary API key configured (Key 1 of {len(api_keys)})")
+
+    def _get_key_label(self, idx):
+        return f"Key {idx + 1}/{len(self.api_keys)}"
+
+    def generate_content(self, prompt, **kwargs):
+        """Try generating with current key, fallback on failure."""
+        last_error = None
+
+        for attempt in range(len(self.api_keys)):
+            idx = (self.current_index + attempt) % len(self.api_keys)
+            model_info = self.models[idx]
+
+            try:
+                # Switch active API key
+                genai.configure(api_key=model_info["key"])
+                result = model_info["model"].generate_content(prompt, **kwargs)
+
+                # Success — remember which key worked
+                if idx != self.current_index:
+                    print(f"🔄 Switched to {self._get_key_label(idx)} (previous failed)")
+                    self.current_index = idx
+
+                return result
+
+            except Exception as e:
+                error_msg = str(e)
+                last_error = e
+                is_quota = "429" in error_msg or "quota" in error_msg.lower() or "resource" in error_msg.lower()
+                is_server = "500" in error_msg or "503" in error_msg
+
+                if is_quota or is_server:
+                    print(f"⚠️  {self._get_key_label(idx)} failed: {error_msg[:80]}")
+                    if attempt < len(self.api_keys) - 1:
+                        next_idx = (idx + 1) % len(self.api_keys)
+                        print(f"🔄 Trying {self._get_key_label(next_idx)}...")
+                    continue
+                else:
+                    # Non-quota error — don't fallback, raise immediately
+                    raise
+
+        # All keys exhausted
+        raise Exception(f"All {len(self.api_keys)} API keys failed. Last error: {last_error}")
+
+
+# Initialize fallback LLM
+llm = LLMFallback(API_KEYS)
 quiz_engine = QuizEngine(llm)
 visual_engine = VisualEngine(llm)
 
