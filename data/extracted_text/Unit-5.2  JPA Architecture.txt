@@ -1,0 +1,185 @@
+[SOURCE_TYPE: PDF]
+[FILE: Unit-5.2  JPA Architecture.pdf]
+----------------------------------------
+
+[PAGE 1]
+CSE 2006 - Programming in Java
+Course Type: LP Credits: 3
+
+[PAGE 2]
+Unit- 5 Database Applications With JDBC
+• Defining the layout of the JDBC API - Connecting to a
+database by using a JDBC driver – Submitting queries and
+getting results from the database - Specifying JDBC driver
+information externally.
+• Java Persistence API
+• JPA architecture, ORM Components, - Performing CRUD
+operations using the JDBC API.
+• JPA installation, Java Persistence Query language, Creating
+JPA entities, Advanced mappings.
+2
+
+[PAGE 3]
+Java Persistence API
+• What is JPA?
+• Spring Boot JPA is a Java specification for managing relational data in Java
+applications. It allows us to access and persist data between Java object/
+class and relational database.
+• JPA follows Object-Relation Mapping (ORM). It is a set of interfaces. It
+also provides a runtime Entity Manager API for processing queries and
+transactions on the objects against the database. It uses a
+platform-independent object-oriented query language JPQL (Java
+Persistent Query Language).
+In the context of persistence, it covers three areas:
+• The Java Persistence API
+• Object-Relational metadata
+• The API itself, defined in the persistence package
+• JPA is not a framework. It defines a concept that can be implemented by
+any framework.
+3
+
+[PAGE 4]
+Java Persistence API
+• Why should we use JPA?
+• JPA is simpler, cleaner, and less labor-intensive than JDBC, SQL, and
+hand-written mapping. JPA is suitable for non-performance oriented
+complex applications.
+• The main advantage of JPA over JDBC is that, in JPA, data is represented
+by objects and classes while in JDBC data is represented by tables and
+records. It uses POJO(Plain Old Java Object) to represent persistent data
+that simplifies database programming.
+There are some other advantages of JPA:
+1. JPA avoids writing DDL in a database-specific dialect of SQL. Instead of
+this, it allows mapping in XML or using Java annotations.
+2. JPA allows us to avoid writing DML in the database-specific dialect of SQL.
+3. JPA allows us to save and load Java objects and graphs without any DML
+language at all.
+4. When we need to perform queries JPQL, it allows us to express the
+queries in terms of Java entities rather than the (native) SQL table and
+columns.
+4
+
+[PAGE 5]
+Java Persistence API
+• JPA Features
+• There are following features of JPA:
+• It is a powerful repository and custom object-mapping abstraction.
+• It supports for cross-store persistence. It means an entity can be partially
+stored in MySQL and Neo4j (Graph Database Management System).
+• It dynamically generates queries from queries methods name
+• The domain base classes provide basic properties
+• It supports transparent auditing
+• Possibility to integrate custom repository code
+• It is easy to integrate with Spring Framework with the custom namespace
+5
+
+[PAGE 6]
+JPA Architecture
+• JPA is a source to store business entities as relational entities. It shows how
+to define a POJO as an entity and how to manage entities with relation.
+• The following figure describes the class-level architecture of JPA that
+describes the core classes and interfaces of JPA that is defined in the javax
+persistence package. The JPA architecture contains the following units:
+• Persistence: It is a class that contains static methods to obtain an
+EntityManagerFactory instance.
+• EntityManagerFactory: It is a factory class of EntityManager. It creates and
+manages multiple instances of EntityManager.
+• EntityManager: It is an interface. It controls the persistence operations on
+objects. It works for the Query instance.
+• Entity: The entities are the persistence objects stores as a record in the
+database.
+• Persistence Unit: It defines a set of all entity classes. In an application,
+EntityManager instances manage it. The set of entity classes represents the
+data contained within a single data store.
+6
+
+[PAGE 7]
+JPA Architecture
+• EntityTransaction: It has a one-to-one relationship with the EntityManager
+class. For each EntityManager, operations are maintained by
+EntityTransaction class.
+• Query: It is an interface that is implemented by each JPA vendor to obtain
+relation objects that meet the criteria.
+7
+
+[PAGE 8]
+JPA Implementations
+• JPA is an open-source API. There is various enterprises vendor such as
+Eclipse, RedHat, Oracle, etc. that provides new products by adding the JPA
+in them. There are some popular JPA implementations frameworks such
+as Hibernate, EclipseLink, DataNucleus, etc. It is also known
+as Object-Relation Mapping (ORM) tool.
+• Object-Relation Mapping (ORM)
+• In ORM, the mapping of Java objects to database tables, and vice-versa is
+called Object-Relational Mapping. The ORM mapping works as a bridge
+between a relational database (tables and records) and Java
+application (classes and objects).
+• In the following figure, the ORM layer is an adapter layer. It adapts the
+language of object graphs to the language of SQL and relation tables.
+•
+8
+
+[PAGE 9]
+Object-Relation Mapping (ORM)
+The ORM layer exists between the application and the database. It converts
+the Java classes and objects so that they can be stored and managed in a
+relational database. By default, the name that persists become the name of
+the table, and fields become columns. Once an application sets-up, each
+table row corresponds to an object.
+9
+
+[PAGE 10]
+CRUD operations
+• The CRUD stands for Create, Read/Retrieve, Update, and Delete.
+These are the four basic functions of the persistence storage.
+• The CRUD operation can be defined as user interface conventions
+that allow view, search, and modify information through
+computer-based forms and reports. CRUD is data-oriented and the
+standardized use of HTTP action verbs. HTTP has a few important
+verbs.
+• POST: Creates a new resource
+• GET: Reads a resource
+• PUT: Updates an existing resource
+• DELETE: Deletes a resource
+• Within a database, each of these operations maps directly to a series
+of commands. However, their relationship with a RESTful API is
+slightly more complex.
+10
+
+[PAGE 11]
+CRUD operations
+• Standard CRUD Operation
+• CREATE Operation: It performs the INSERT statement to create a new
+record.
+• READ Operation: It reads table records based on the input parameter.
+• UPDATE Operation: It executes an update statement on the table. It is
+based on the input parameter.
+• DELETE Operation: It deletes a specified row in the table. It is also based on
+the input parameter.
+• How CRUD Operations Works
+• CRUD operations are at the foundation of the most dynamic websites.
+Therefore, we should differentiate CRUD from the HTTP action verbs.
+11
+
+[PAGE 12]
+CRUD operations
+RESTful Web
+Operation SQL HTTP verbs
+Service
+Create INSERT PUT/POST POST
+Read SELECT GET GET
+Update UPDATE PUT/POST/PATCH PUT
+Delete DELETE DELETE DELETE
+12
+
+[PAGE 13]
+More on JDBC
+• More on JDBC
+• https://www.javatpoint.com/java-jdbc
+• MS access with JDBC connection
+• https://www.c-sharpcorner.com/UploadFile/433c33/jdbc-con
+nection-to-ms-access/
+• Performing CRUD operations using the JDBC API
+• https://www.javaguides.net/2020/02/java-jdbc-crud-operatio
+ns-in-eclipse.html
+13

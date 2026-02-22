@@ -1,0 +1,350 @@
+
+TOPIC: [SOURCE_TYPE: PDF]
+
+Definition:
+[FILE: Unit-2.2 Keywords.pdf]
+
+[PAGE 1]
+Content
+1. this Keyword
+2. final Keyword
+3. Recursion
+4. Operator ‘instanceof’
+5. enum class
+[PAGE 2]
+1. this Keyword
+[PAGE 3]
+this keyword
+In Java, this is a reference variable that refers to the current object.
+Usages of Java this keywor
+1. this can be used to refer current class instance variable.
+2. this can be used to invoke current class method (implicitly)
+3. this() can be used to invoke current class constructor.
+4. this can be passed as an argument in the method call.
+5. this can be passed as argument in the constructor call.
+6. this can be used to return the current class instance from the method.
+[PAGE 4]
+Refer Current Class Instance Variable
+Resolve the problem of Ambiguity between the instance
+variables and parameters (local variables).
+class Student{
+int rollno;
+String name;
+float fee;
+Student(int rollno, String name, float fee)
+{
+rollno=rollno;
+name=name;
+fee=fee;
+}
+void display()
+{ System.out.println(rollno+" "+name+" "+fee);} }
+[PAGE 5]
+Refer Current Class Instance Variable
+class TestStudent{
+public static void main(String args[]){
+Student s1=new Student(111,"ankit",5000f);
+Student s2=new Student(112,"sumit",6000f);
+s1.display();
+s2.display();
+}}
+The execution result due to ambiquity is:
+0 null 0.0
+0 null 0.0
+To resolve the ambiquity, use this keyword in
+this.rollno = rollno;
+this.name = name;
+this.fee = fee;
+[PAGE 6]
+Invoke the Current Class Method
+Suppose if the programmer not provide the this keyword to access the
+current class method, Java compiler add “this” keyword automatically.
+class ArithmeticOperations {
+void addition() { }
+void subtraction () { }
+addition(); // compiler convert this.addition();
+}
+public static void main(String[] a) {
+new ArithmeticOperations().subtraction();
+[PAGE 7]
+Invoke the Current Class Constructor
+Current class constructor to be invoked and reused by this keyword.
+Calling default constructor from parameterized constructor
+class Calculate {
+Calculate c= new Calculate(5,5);
+Calculate()
+{
+System.out.println(“Hello World”);
+}
+Calculate(int x, int y)
+{ this();
+System.out.println(x*y);
+}}
+[PAGE 8]
+Invoke the Current Class Constructor
+Calling parameterized constructor from default constructor
+class Calculate {
+Calculate()
+{
+Calculate c= new Calculate();
+this(5,5);
+System.out.println(“Hello World”);
+}
+Calculate(int x, int y)
+{
+System.out.println(x*y);
+}}
+Constructor Chain?
+[PAGE 9]
+2. final Keyword
+[PAGE 10]
+JAVA final Keyword
+The final keyword in java is used to restrict the user. The java final keyword can be
+used in many context. Final can be:
+variable
+method
+class
+The final keyword can be applied with the variables, a final variable that have no
+value it is called blank final variable or uninitialized final variable. It can be
+initialized in the constructor only. The blank final variable can be static also which
+will be initialized in the static block only. We will have detailed learning of these.
+Let's first learn the basics of final keyword.
+1) Java final variable
+If you make any variable as final, you cannot change the value of final variable(It
+will be constant).
+Example of final variable
+There is a final variable speedlimit, we are going to change the value of this
+variable, but It can't be changed because final variable once assigned a value can
+never be changed.
+[PAGE 11]
+JAVA final Keyword contd...
+Final Variable:
+class Bike9{
+final int speedlimit=90;//final variable
+void run(){
+speedlimit=400;
+}
+public static void main(String args[]){
+Bike9 obj=new Bike9();
+obj.run();
+}
+}//end of class
+Output: Compile Time Error
+[PAGE 12]
+JAVA final Keyword contd...
+Final Method:
+If you make any method as final, you cannot override it.
+class Bike{
+final void run(){System.out.println("running");}
+}
+class Honda extends Bike{
+void run(){System.out.println("Running safely with 100kmph");}
+public static void main(String args[]){
+Honda honda= new Honda();
+honda.run();
+}
+Output: Compile Time Error
+}
+[PAGE 13]
+JAVA final Keyword contd...
+Final Class:
+If you make any class as final, you cannot extend it.
+final class Bike
+{
+}
+class Honda extends Bike{
+void run(){System.out.println("Running safely with 100kmph");}
+public static void main(String args[]){
+Honda honda= new Honda();
+honda.run();
+}
+Output: Compile Time Error
+}
+[PAGE 14]
+Where to apply final Keyword?
+Q) What is blank or uninitialized final variable?
+A final variable that is not initialized at the time of declaration is known as blank
+final variable.
+If you want to create a variable that is initialized at the time of creating object and
+once initialized may not be changed, it is useful. For example PAN CARD number of
+an employee.
+It can be initialized only in constructor.
+Example of blank final variable
+class Student
+{
+int id;
+String name;
+final String PAN_CARD_NUMBER;
+...
+}
+[PAGE 15]
+Where to apply final Keyword?
+Que) Can we initialize blank final variable?
+Yes, but only in constructor.
+class Bike10{
+final int speedlimit; //blank final variable
+Bike10(){
+speedlimit=70;
+System.out.println(speedlimit);
+}
+public static void main(String args[]){
+new Bike10();
+}
+}
+[PAGE 16]
+Where to apply final Keyword?
+static blank final variable
+A static final variable that is not initialized at the time of declaration is known
+as static blank final variable. It can be initialized only in static block.
+Example of static blank final variable
+class A
+{
+static final int data; //static blank final variable
+static
+{ data=50;}
+public static void main(String args[])
+{
+System.out.println(A.data);
+}
+}
+[PAGE 17]
+3. Recursion
+[PAGE 18]
+Recursion in JAVA
+Recursion in java is a process in which a method calls itself
+continuously.
+A method in java that calls itself is called recursive method.
+It makes the code compact but complex to understand.
+Syntax:
+returntype methodname(){
+method body; //code to be executed
+methodname(); //calling same method
+}
+[PAGE 19]
+Recursion in JAVA – Infinite Times
+public class RecursionInfinite
+{
+static void test()
+{
+System.out.println("Hello World");
+test();
+}
+public static void main(String[] args) {
+test();
+}
+}
+[PAGE 20]
+Recursion in JAVA – Finite Times
+public class RecursionFinite
+{
+static int count=0;
+static void test()
+{
+count++;
+if(count<=5) {
+System.out.println("Hello World" +count);
+test();
+}
+public static void main(String[] args) {
+test();
+}
+}
+[PAGE 21]
+Recursion in JAVA – Practices
+1. Factorial
+2. Fibonacci Series
+[PAGE 22]
+4. Operator ‘instanceof’
+[PAGE 23]
+JAVA ‘instanceof’ Operator
+The java instanceof operator is used to test whether the object is an instance
+of the specified type (class or subclass or interface).
+The ‘instanceof’ in java is also known as type comparison operator because it
+compares the instance with type. It returns either true or false. If we apply the
+instanceof operator with any variable that has null value, it returns false.
+Simple example of java instanceof
+Let's see the simple example of instance operator where it tests the current class.
+class Simple1{
+public static void main(String args[])
+{
+Simple1 s=new Simple1();
+System.out.println(s instanceof Simple1); //true
+} }
+[PAGE 24]
+JAVA ‘instanceof’ Operator
+An object of subclass type is also a type of parent class. For example, if Dog
+extends Animal then object of Dog can be referred by either Dog or Animal
+class.
+Another example of java instanceof operator
+class Animal{}
+class Dog1 extends Animal{//Dog inherits Animal
+public static void main(String args[]){
+Dog1 d=new Dog1();
+System.out.println(d instanceof Animal);//true
+}
+}
+[PAGE 25]
+JAVA ‘instanceof’ Operator
+instanceof in java with a variable that have null value
+If we apply instanceof operator with a variable that have null value, it
+returns false.
+class Dog2{
+public static void main(String args[]){
+Dog2 d=null;
+System.out.println(d instanceof Dog2); //false
+}
+}
+[PAGE 26]
+5. enum class
+[PAGE 27]
+JAVA enum class
+The enum in Java is a data type which contains a fixed set of constants.
+It can be used for days of the week (SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
+THURSDAY, FRIDAY, and SATURDAY) , directions (NORTH, SOUTH, EAST, and
+WEST), season (SPRING, SUMMER, WINTER, and AUTUMN or FALL), colors (RED,
+YELLOW, BLUE, GREEN, WHITE, and BLACK) etc. According to the Java naming
+conventions, we should have all constants in capital letters. So, we have enum
+constants in capital letters.
+Java enums can be thought of as classes which have a fixed set of constants (a
+variable that does not change).
+The Java enum constants are static and final implicitly. It is available since JDK
+1.5.
+Enums are used to create our own data type like classes. The enum data type
+(also known as Enumerated Data Type) is used to define an enum in Java. Unlike
+C/C++, enum in Java is more powerful. Here, we can define an enum either inside
+the class or outside the class.
+[PAGE 28]
+JAVA enum class
+Java Enum internally inherits the Enum class, so it cannot inherit any other
+class, but it can implement many interfaces. We can have fields, constructors,
+methods, and main methods in Java enum.
+Points to remember for Java Enum
+Enum improves type safety
+Enum can be easily used in switch
+Enum can be traversed
+Enum can have fields, constructors and methods
+Enum may implement many interfaces but cannot extend any class because it
+internally extends Enum class
+[PAGE 29]
+JAVA enum class
+Simple Example of Java Enum
+class EnumExample1{
+//defining the enum inside the class
+public enum Season { WINTER, SPRING, SUMMER, FALL }
+//main method
+public static void main(String[] args) {
+//traversing the enum
+for (Season s : Season.values())
+System.out.println(s);
+}}
+[PAGE 30]
+JAVA enum class
+Java Enum Example: Defined inside class
+class EnumExample2{
+enum Season { WINTER, SPRING, SUMMER, FALL; }
+//semicolon(;) is optional here
+public static void main(String[] args) {
+Season s=Season.WINTER;
+//enum type is required to access WINTER
+System.out.println(s);
+}}

@@ -1,0 +1,627 @@
+[SOURCE_TYPE: PDF]
+[FILE: Unit-2.4 Special Classes.pdf]
+----------------------------------------
+
+[PAGE 1]
+Content
+1. Nested and Inner class
+2. Static class
+3. Singleton class
+4. Anonymous class
+5. Enum class, constructor, String.
+6. Reflection
+
+[PAGE 2]
+1. Nested and Inner Class
+
+[PAGE 3]
+Introduction
+• Java inner class or nested class is a class that is declared inside the
+class or interface.
+• We use inner classes to logically group classes and interfaces in one
+place to be more readable and maintainable.
+• Additionally, it can access all the members of the outer class, including
+private data members and methods.
+• Syntax of Inner class
+class Java_Outer_class{
+//code
+class Java_Inner_class{
+//code
+}
+}
+
+[PAGE 4]
+Introduction cont...
+• There are three advantages of inner classes in Java.
+1. Nested classes represent a particular type of relationship
+that is it can access all the members (data members and
+methods) of the outer class, including private.
+2. Nested classes are used to develop more readable and
+maintainable code because it logically group classes and
+interfaces in one place only.
+3. Code Optimization: It requires less code to write.
+
+[PAGE 5]
+Introduction cont...
+When we use?
+A programmer decide that no other class can access a class,
+then include it within other classes.
+If all the class objects are a part of the outer object then it is
+easier to nest that class inside the outer class. That way all the
+outer class can access all the objects of the inner class.
+How to differentiate Nested and Inner class?
+An inner class is a part of a Nested class.
+Non static Nested classes are Inner class.
+
+[PAGE 6]
+Types of Nested Class
+• There are two types of nested classes
+•
+• 1. Static Nested class: A static class within a class.
+• Nested Interface: Within a class or interface.
+• 2. Non-static Nested class. (Inner class)
+• Local Inner class: Within the method.
+• Member Inner class: Within a class & Outside of method.
+• Anonymous Inner class: Extending class or implementing
+interface.
+
+[PAGE 7]
+How to implement?
+• A non-static class that is created inside a class but outside of a method is
+called “member inner class” or “regular inner class”.
+• Access Modifiers: public, private, protected, default.
+• Syntax:
+• class MatrixArithmaticOperations
+• {
+• // Code
+• class MatrixAddition
+• { // Code
+• }
+• }
+•
+
+[PAGE 8]
+How to implement? cont...
+class OuterTest // Outer class
+{
+private int x = 100;
+class InnerTest // Inner class
+{
+void display()
+{
+System.out.println(“Outer member=” +x);
+}
+} // End of Inner class
+public static void main(String[] args) {
+OuterTest ot = new OuterTest();
+OuterTest.InnerTest it = ot.new InnerTest();
+it.display();
+}
+} // End of Outer class
+
+[PAGE 9]
+2. Static Class
+
+[PAGE 10]
+Introduction
+• A static class is a class that is created inside a class, is called a static
+nested class in Java. It cannot access non-static data members and
+methods. It can be accessed by outer class name.
+• It can access static data members of the outer class, including private.
+• The static nested class cannot access non-static (instance) data members.
+class TestOuter1{
+static int data=30;
+static class Inner{
+void msg(){System.out.println("data is "+data);}
+}
+public static void main(String args[]){
+TestOuter1.Inner obj=new TestOuter1.Inner();
+obj.msg();
+}
+}
+
+[PAGE 11]
+How we use?
+When a class needed to initialize instance methods.
+In our example, the class TestOuter need to initialize instance method
+“msg()”. Therefore we need to create the instance of static nested class.
+Here, we don't need to create the object of the Outer class because the
+nested class is static and static properties, methods, or classes can be
+accessed without an object.
+
+[PAGE 12]
+3. Singleton Class
+
+[PAGE 13]
+Introduction
+• In Java, Singleton is a design pattern that ensures that a class can only
+have one object.
+• To create a singleton class, a class must implement the following
+properties:
+• Create a private constructor of the class to restrict object creation
+outside of the class.
+• Create a private attribute of the class type that refers to the single
+object.
+• Create a public static method that allows us to create and access the
+object we created.
+• Inside the method, we will create a condition that restricts us from
+creating more than one object.
+
+[PAGE 14]
+Introduction
+Singletons class have only one object (an instance of the class) at a
+time.
+One more time we instantiate the Singleton classes, the new variable
+also points to the first instance created.
+So, whatever modifications we do to any variable inside the class
+through any instance, affects the variable of the single instance
+created and is visible if we access that variable through any variable
+of that class type defined.
+1. Make a constructor private.
+2. Write a static method that has the return type object
+of this singleton class. (Lazy Initialization)
+
+[PAGE 15]
+Design
+There are two forms of design pattern:
+1. Early Instantiation – The object creation takes place
+at the load time.
+2. Lazy Instantiation – The object is done according to
+the requirement.
+Ensure that only one instance of the class exists.
+Provide global access to that instance by:
+* Declaring all constructor of the class to be private.
+* Providing a static method that returns a reference
+to the instance.
+* The instance is stored as a private static variable.
+Example of singleton classes are:
+Runtime class, Action Servlet, Service Locator,
+Private Constructor, Factory Methods, etc.
+
+[PAGE 16]
+Implementation
+• class SingletonExample {
+// private field that refers to the object
+private static SingletonExample singleObject;
+private SingletonExample()
+{ // constructor of the SingletonExample class }
+public static SingletonExample getInstance()
+{ // write code that allows us to create only one object
+// access the object as per our need
+} }
+• private static SingletonExample singleObject - a reference to the object of the
+class.
+• private SingletonExample() - a private constructor that restricts creating objects
+outside of the class.
+• public static SingletonExample getInstance() - this method returns the reference
+to the only object of the class. Since the method static, it can be accessed using the
+class name.
+
+[PAGE 17]
+Purpose
+The primary purpose is to restrict the limit of the number of object
+creation is only one.
+Ex: Access Control to resources – socket or Database connection.
+Memory space wastage does not occur because of restricted instance
+creation. The object creation will take place only once instead of
+creating it each time a new request is made.
+We can use the singleton object repeatedly as per the requirements.
+Ex: In multi-threaded and Database applications – caching, logging,
+thread pooling, configuration settings, etc. (JDBC driver does not
+support multi-threading)
+
+[PAGE 18]
+Implementation
+class Database {
+private static Database dbObject;
+private Database() {
+}
+public static Database getInstance() {
+// create object if it's not already created
+if(dbObject == null) {
+dbObject = new Database();
+}
+// returns the singleton object
+return dbObject;
+}
+public void getConnection() {
+System.out.println("You are now connected to the database.");
+}
+}
+
+[PAGE 19]
+4. Anonymous Inner Class
+
+[PAGE 20]
+Introduction
+• Java anonymous inner class is an inner class without a name and for
+which only a single object is created.
+• An anonymous inner class can be useful when making an instance of an
+object with certain "extras" such as overloading methods of a class or
+interface, without having to actually subclass a class.
+• In simple words, a class that has no name is known as an anonymous inner
+class in Java. It should be used if you have to override a method of class or
+interface.
+Java Anonymous inner class can be created in two ways:
+1. Class (may be abstract or concrete).
+2. Interface
+
+[PAGE 21]
+Implementation using class
+abstract class Person
+{
+abstract void eat();
+}
+class TestAnonymousInner
+{
+public static void main(String args[])
+{
+Person p=new Person(){
+void eat()
+{System.out.println("nice fruits");}
+};
+p.eat();
+}
+}
+
+[PAGE 22]
+Implementation using interface
+interface Eatable
+{
+void eat();
+}
+class TestAnnonymousInner1
+{
+public static void main(String args[]){
+Eatable e=new Eatable(){
+public void eat()
+{System.out.println("nice fruits");}
+};
+e.eat();
+}
+}
+
+[PAGE 23]
+Local Inner Class
+• A class i.e., created inside a method, is called local inner class in java. Local
+Inner Classes are the inner classes that are defined inside a block.
+Generally, this block is a method body. Sometimes this block can be a for
+loop, or an if clause.
+• Local Inner classes are not a member of any enclosing classes. They belong
+to the block they are defined within, due to which local inner classes
+cannot have any access modifiers associated with them. However, they
+can be marked as final or abstract. These classes have access to the fields
+of the class enclosing it.
+If you want to invoke the methods of the local inner class, you must
+instantiate this class inside the method.
+
+[PAGE 24]
+Implementation of Local Inner Class
+public class LocalInner{
+private int data=30; //instance variable
+void display()
+{
+class Local{
+void msg()
+{System.out.println(data);}
+} // end of Local
+Local l=new Local();
+l.msg();
+} // end of display()
+public static void main(String args[]){
+LocalInner obj=new LocalInner();
+obj.display();
+} // end of main
+} // end of class LocalInner
+
+[PAGE 25]
+5. enum class, constructor, string
+
+[PAGE 26]
+Introduction
+• In Java, an enum (short for enumeration) is a type that has a fixed set of
+constant values. We use the enum keyword to declare enums.
+enum Size
+{
+SMALL, MEDIUM, LARGE, EXTRALARGE
+}
+Here, we have created an enum named Size. It contains fixed
+values SMALL, MEDIUM, LARGE, and EXTRALARGE.
+These values inside the braces are called enum constants (values).
+Note: The enum constants are usually represented in
+uppercase.
+
+[PAGE 27]
+Introduction
+enum Size {
+SMALL, MEDIUM, LARGE, EXTRALARGE
+}
+class ShirtSize{
+public static void main(String[] args) {
+System.out.println(Size.SMALL);
+System.out.println(Size.MEDIUM);
+}
+}
+
+[PAGE 28]
+Constructor
+• In Java, an enum class may include a constructor like a regular
+class.
+• These enum constructors are either
+• private - accessible within the class
+or
+• package-private - accessible within the
+• package
+
+[PAGE 29]
+Constructor Implementation
+• enum Size
+• { // enum constants calling the enum constructors
+SMALL("The size is small."),
+MEDIUM("The size is medium."),
+LARGE("The size is large."),
+EXTRALARGE("The size is extra large.");
+private final String pizzaSize;
+// private enum constructor
+private Size(String pizzaSize) {
+this.pizzaSize = pizzaSize;
+}
+public String getSize() {
+return pizzaSize;
+}
+}
+
+[PAGE 30]
+Constructor Implementation
+class Main {
+public static void main(String[] args)
+{
+Size size = Size.SMALL;
+System.out.println(size.getSize());
+}
+}
+
+[PAGE 31]
+Constructor Implementation Explanation
+• Create an enumerated class Size.
+• Includes a private enum constructor.
+• The constructor takes a string value as a parameter and
+assigns value to the variable pizzaSize.
+• Since the constructor is private, we cannot access it from
+outside the class.
+• However, we can use enum constants to call the
+constructor.
+• In the Main class, we assigned SMALL to an enum
+variable size.
+• The constant SMALL then calls the constructor Size with
+string as an argument.
+• Finally, we called getSize() using size variable.
+
+[PAGE 32]
+String
+• In Java, we can get the string representation of enum constants
+• using the toString() method or the name() method.
+• enum Size {
+SMALL, MEDIUM, LARGE, EXTRALARGE
+}
+class Main {
+public static void main(String[] args)
+{
+System.out.println("string value of SMALL is"+Size.SMALL.toString());
+System.out.println("string value of MEDIUM is"+Size.MEDIUM.name());
+}
+}
+
+[PAGE 33]
+6. Reflection
+
+[PAGE 34]
+Introduction
+• Reflection is an API that is used to examine or modify the behavior of
+methods, classes, and interfaces at runtime.
+• The required classes for reflection are provided
+under java.lang.reflect package.
+
+[PAGE 35]
+Introduction
+Reflection gives us information about the class to which an object belongs
+and also the methods of that class that can be executed by using the
+object.
+Through reflection, we can invoke methods at runtime irrespective of the
+access specifier used with them.
+
+[PAGE 36]
+Introduction
+Reflection is the ability of the software to analyze itself at runtime.
+Reflection is provided by the “java.lang.reflect” package and elements in
+class.
+Reflection mechanism is helpful to tool builders, not application
+programmers.
+Reflection Mechanism Usages:
+* Analyze the capabilities of classes at runtime.
+* Inspect objects at runtime.
+* Implement generic array manipulation code.
+
+[PAGE 37]
+Structure of Reflection
+Java.lang.Class
+Field[] getFields() Field[] getDeclaredFields()
+Method[] getMethod() Method[] getDeclaredMethods()
+Constructor[] getConstructor() Constructor[] getDeclaredConstructors()
+Return all public members of the Return all kind of members (public,
+class and super class. private, protected) in the class.
+Java.lang.reflect
+Field Method Constructor
+
+[PAGE 38]
+Implementation
+Reflection can be used to get information about class,
+constructors, and methods.
+The getClass() method is used to get the name
+Class
+of the class to which an object belongs.
+The getConstructors() method is used to get the
+Constructors public constructors of the class to which an
+object belongs.
+The getMethods() method is used to get the
+Methods public methods of the class to which an object
+belongs.
+
+[PAGE 39]
+Implementation cont...
+• In Java, reflection allows us to inspect and manipulate classes,
+interfaces, constructors, methods, and fields at run time.
+• There is a class in Java named Class that keeps all the information
+about objects and classes at runtime. The object of Class can be
+used to perform reflection.
+
+[PAGE 40]
+Implementation cont...
+Step-1: Create an object of Class.
+Step-2: Using the object we can call various methods to get
+information about methods, fields, and constructors
+present in a class.
+There exists three ways to create objects of Class:
+1. Using forName() method
+class Dog {...} // create object of Class to reflect the Dog
+class Class a = Class.forName("Dog");
+The forName() method takes the name of the class to be reflected as its
+argument.
+
+[PAGE 41]
+Implementation cont...
+2. Using getClass() method
+// create an object of Dog class
+Dog d1 = new Dog(); // create an object of Class
+// to reflect Dog
+Class b = d1.getClass();
+Here, we are using the object of the Dog class to create an object of Class.
+3. Using .class extension
+// create an object of Class to reflect the Dog class
+Class c = Dog.class;
+Now that we know how we can create objects of the Class. We can use this
+object to get information about the corresponding class at runtime.
+
+[PAGE 42]
+Reflection - Field
+Reflection provide information about fields.
+The getFields() method returns an array containing Field objects for the
+public fields.
+The getDeclaredFields() method returns an array of Field objects for all
+fields. This method return an array of length 0 if there are no such fields.
+
+[PAGE 43]
+Example - Field
+public Fields:
+import java.lang.reflect.*;
+public int Test.a
+class Test {
+public int a;
+private int b;
+protected int c;
+int d; All Declared Fields:
+} public int Test.a
+public class FieldDemo { private int Test.b
+public static void main(String a[]) throws Exception {
+protected int Test.c
+Class c = Class.forName(“Test”);
+int Test.d
+Field f1[] = c.getFields();
+Field f2[] = c.getDeclaredFields();
+System.out.println(“public Fields:”);
+for(int i=0; i<f1.length; i++)
+System.out.println(f1[i]);
+System.out.println(“All Declared Fields:”);
+for(i=0; i<f2.length; i++)
+System.out.println(f2[i]);
+}
+}
+
+[PAGE 44]
+Reflection - Method
+Reflection provide information about method.
+The getMethods() method returns an array containing Method objects that
+give all the public methods including parent class.
+The getDeclaredMethods() method returns all methods of the class or
+interface.
+
+[PAGE 45]
+Example - Method
+public Methods of class Test and its super class:
+add
+hashcode
+All Declared Methods:
+import java.lang.reflect.*;
+getClass
+add
+class Test {
+wait
+sub
+public void add() { }
+equals
+private void sub() { } mul
+notify
+protected void mul() { } div
+ntoifyAll
+void div() { }
+toString
+}
+public class MethodDemo {
+public static void main(String a[]) throws Exception {
+Class c = Class.forName(“Test”);
+Method m1[] = c.getMethods();
+Method m2[] = c.getDeclaredMethods();
+System.out.println(“public Methods of class Test and its super class:”);
+for(int i=0; i<m1.length; i++)
+System.out.println(m1[i].getName());
+System.out.println(“All Declared Methods:”);
+for(i=0; i<m2.length; i++)
+System.out.println(m2[i].getName());
+}
+}
+
+[PAGE 46]
+Reflection - Constructor
+Reflection provide information about constructors.
+The getConstructors() method returns an array containing Constructor
+objects that give all the public constructors.
+The getDeclaredConstructors() method returns all constructors of the class
+represented by the Class object.
+Run Time Object Analysis
+f.set(obj, value) sets the field represented by f of the object obj to the new
+value.
+f.get(obj) returns an object whose value is the current value of the field of
+obj.
+
+[PAGE 47]
+Example - Constructor
+Before a = 10
+import java.lang.reflect.*;
+class Test {
+public int a, b; After a = 11
+Test(int x, int y) {
+a = x;
+b = y; }
+Before b = 20
+}
+public class ConstructorDemo {
+After b = 25
+public static void main(String a[]) throws Exception {
+Test t = new Test(10, 20);
+System.out.println(“Before a = “ +t.a);
+Field f1 = t.getClass().getField(“a”);
+int c = f1.getInt(t)+1;
+f1.setInt(t, c);
+System.out.println(“\n After a =” +c);
+System.out.println(“Before b =” +t.b);
+Field f2 = t.getClass().getField(“b”);
+f2.set(t, 25);
+System.out.println(“After b = “ +f2.get(t));
+}
+}
+
+[PAGE 48]
+Exercises
+1. Reflection invoke Method without Parameter
+2. Reflection invoke Method with Parameter
+3. Reflection invoke Method by Name

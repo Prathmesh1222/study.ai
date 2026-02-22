@@ -1,0 +1,186 @@
+
+TOPIC: [UNIT: Unit1_Basics]
+
+Definition:
+[SOURCE_FILE: 1.1.pptx]
+
+Course Objectives
+Students who complete this course will be able to
+Analyze	the	Java	flow	control	using	essentials	of	Java programming.
+Solve	simple	business	problems	using	an	object-oriented approach.
+Demonstrate synchronization among different processes using a multithreading approach and exception handling techniques.
+Implement	Java	Input	and	Output	streaming	using	Java packages.
+Develop and create real-time applications using JDBC and JPA technology.
+Unit-1	Contents
+Java Introduction
+Java Hello World, Java JVM, JRE and JDK, Difference 	between C & C++, Java Variables, Java Data Types, Java 	Operators, Java Input and Output, Java Expressions & 	Blocks, Java Comment
+Java Flow Control
+Java if...else, Java  switch  Statement, Java for Loop, 	Java  for-each  Loop,  Java  while  Loop,  Java  break 	Statement, Java continue Statement
+Introduction to JAVA
+The primary objective of Java programming language creation was to make  it  portable,  simple  and  secure  programming  language.  The features of Java are also known as Java buzzwords.
+A list of the most important features of the Java language is,
+Simple
+Object-Oriented
+Portable
+Platform independent
+Secured
+Robust
+Architecture neutral
+Interpreted
+High Performance
+Multithreaded
+Distributed
+Dynamic
+Features of JAVA
+Simple: Sun Microsystem expressed the JAVA is simple 	comparing C++ based on
+Syntax (same as C++)
+Complexity – explicit pointers, Overloading, etc.
+Destructor – Deleting Unreferenced objects in C++ 	(Garbage Collection)
+Object-oriented:
+- Software consists	of	Object,	Class,	Inheritance,	Polymorphism, Encapsulation, Abstraction.
+Machine/Platform Independent:
+Write and Compile in one machine can Run in any
+machine using JVM.
+Features of JAVA
+contd...
+Machine/Platform Independent:
+Write and Compile in one machine can Run in any
+machine using JVM.
+Java code can be executed on multiple platforms, for example, Windows, Linux, Sun Solaris, Mac/OS, etc. Java code is compiled by the  compiler  and  converted  into  bytecode.  This  bytecode  is  a platform-independent  code  because  it  can  be  run  on  multiple platforms, i.e., Write Once and Run Anywhere (WORA).
+Features of JAVA
+contd...
+Features of JAVA
+contd...
+Features of JAVA
+contd...
+Secured:
+Class Loader: Classloader in Java is a part of the Java Runtime Environment (JRE) which is used to load Java classes into the Java Virtual Machine dynamically. It adds security by separating the package for the classes of the local file system from those that are imported from network sources.
+Byte code Verifier: It checks the code fragments for illegal code that can violate access rights to objects.
+Security Manager: It determines what resources a class can access such as reading and writing to the local disk.
+Java language provides these securities by default. Some security can also be provided by an application developer explicitly through SSL, JAAS, Cryptography, etc.
+Features of JAVA
+contd...
+Robust:
+the Java
+It uses strong memory management.
+There is a lack of pointers that avoids security problems.
+Java provides automatic garbage collection which runs on Virtual Machine to get rid of objects which are
+not being used by a Java application anymore.
+Exception handling and the Type checking mechanism.
+Architecture Neutral:
+The size of primitive data types are fixed.
+C++ - 32-bit occupies – 2 bytes and 64-bit occupies – 4 bytes. Java – 4-bytes for 32 and 64 bit.
+Portable:
+Carrying bytecode to run on any kind of machine.
+Features of JAVA
+contd...
+High Performance:
+Java is faster than other traditional interpreted 	programming languages because Java bytecode is close to 	native code.
+It is still a little bit slower than a compiled language 	(e.g., C++).
+Java is an interpreted language that is why it is slower 	than compiled languages, e.g., C, C++, etc.
+Distributed:
+Java is distributed because it facilitates users to create 	distributed applications in Java.
+RMI and EJB are used for creating distributed applications.
+It helps us to access files by calling the methods from any 	machine on the internet.
+Features of JAVA	contd...
+Multi-threaded
+A thread is like a separate program, executing concurrently.
+We can write Java programs that deal with many tasks at once by defining multiple threads.
+The main advantage of multi-threading is that it doesn't occupy memory for each thread. It shares a common memory area.
+Threads are important for multi-media, Web applications, etc.
+Dynamic:
+Java is a dynamic language. It supports the dynamic loading of classes. It means classes are loaded on demand.
+It also supports functions from its native languages, i.e., C and C++.
+Java	supports	dynamic	compilation	and	automatic	memory	management (garbage collection).
+JAVA Editions
+Java has 4 types of editions
+1. Java Platform, Standard Edition (Java SE)
+2. Java Platform, Enterprise Edition (Java EE)
+3. Java Platform, Micro Edition (Java ME)
+4. Java FX
+Java SE
+It defines everything from the basic types and objects of the Java programming 	language to high-level classes that are used for networking, security, database 	access, graphical user interface (GUI) development, and XML parsing.
+In addition to the core API, the Java SE platform consists of a virtual machine, 	development tools, deployment technologies, and other class libraries and 	toolkits commonly used in Java technology applications.
+JAVA Editions
+JAVA Editions
+Java EE
+The Java EE platform is built on top of the Java SE platform. The Java EE platform provides an API and runtime environment for developing and running large-scale, multi-tiered, scalable, reliable, and secure network applications.
+Java ME
+The Java ME platform provides an API and a small-footprint virtual machine for running  Java  programming  language  applications  on  small  devices,  like  mobile phones.
+The API is a subset of the Java SE API, along with special class libraries useful for small device application development. Java ME applications are often clients of Java EE platform services.
+Java FX
+Java FX technology is a platform for creating rich internet applications written in Java FX ScriptTM. Java FX Script is a statically-typed declarative language that is compiled to Java technology bytecode, which can then be run on a Java VM. Applications written for the Java FX platform can include and link to Java programming language classes, and may be clients of Java EE platform services.
+Implementation of Simple Program
+JAVA Programming
+Whenever, a program is written in JAVA, the javac compiles it.
+The result of the JAVA compiler is the “.class” called Bytecode and not the machine native code (unlike C compiler).
+The bytecode generated is a non-executable code and needs an interpreter to execute on a machine. This interpreter is the JVM and thus the Bytecode is executed by the JVM.
+And finally program runs by “java” to give the desired output.
+JAVA Programming	contd...
+Java  Development  Kit  (JDK)  is  a  software  development  environment  used  for developing Java applications and applets. It includes the Java Runtime Environment (JRE), an interpreter/loader (Java), a compiler (javac), an archiver (jar), a documentation generator (Javadoc), and other tools needed in Java development.
+Java  Runtime  Environment  (JRE) is  a  Runtime  Environment  that  provides  the minimum requirements for executing a Java application.
+It consists of the Java Virtual Machine (JVM), core classes, and supporting files.
+Java Virtual Machine (JVM)
+A specification where the working of Java Virtual Machine is specified. But implementation provider is independent to choose the algorithm. Its implementation has been provided by Sun and other companies.
+An implementation is  a  computer  program  that  meets  the  requirements  of  the  JVM specification.
+Runtime Instance Whenever you write a java command on the command prompt to run the java class, an instance of JVM is created.
+JAVA Programming	contd...
+Components of JRE
+Deployment Technologies: Java Web Start, and Java Plug-in.
+User Interface Toolkits: Abstract Window Toolkit (AWT), Swing, Java 2D, Accessibility, Image I/O, Print Service, Sound, drag, and drop (DnD), and input methods.
+Integration Libraries: Interface Definition Language (IDL), Java Database Connectivity (JDBC), Java Naming and Directory Interface (JNDI), Remote Method Invocation (RMI), Remote Method Invocation Over Internet Inter-Orb Protocol (RMI-IIOP), and scripting.
+Other  base  Libraries: International  support,  input/output  (I/O),  extension  mechanism, Beans, Java Management Extensions (JMX), Java Native Interface (JNI), Math, Networking, Override Mechanism, Security, Serialization, and Java for XML Processing (XML JAXP).
+Lang  and  util  base  Libraries:  lang  and  util,  management,  versioning,  zip,  instrument, reflection, Collections, Concurrency Utilities, Java Archive (JAR), Logging, Preferences API, Ref Objects, and Regular Expressions.
+Java Virtual Machine (JVM), including Java HotSpot Client and Server Virtual Machines.
+JAVA Programming
+contd...
+Declaration Constraints
+File
+Name must be a Class Name.
+Extension is .java
+Class
+Name must be an Noun.
+First letter must be a capital alphabet.
+More than one words are combined by underscore.
+Method
+Name should be Variable with Noun.
+JAVA Programming
+contd...
+System Requirements:
+Set path up to binary directory.
+- Install jdk (version is dependable with application)
+
+
+JAVA Programming
+contd...
+Structure in Java:
+−
+// Single line.
+/* Multiple Line */
+package com.vitbhopal.scse import java.util.Scanner;
+interface cube { } class Cube { }
+public static void main(String args[]) { }
+JAVA Programming
+contd...
+Simple Program: File name “Hello.java”
+class Hello
+{
+public static void main(String a[])
+{
+System.out.println(“Hello VITans”);
+}
+Compilation: $ javac Hello.java
+
+Compilation creates “Hello.class” file.
+Execution: $ java Hello
+
+JAVA Programming
+contd...
+Parameters Used in Hello Program
+class keyword is used to declare a class in Java.
+public keyword is an access modifier that represents visibility. It means it is visible to all.
+static is a keyword. If we declare any method as static, it is known as the static method. The core advantage of the static method is that there is no need to create an object to invoke the static method. The main() method is executed by the JVM, so it doesn't require creating an object to invoke the main() method. So, it saves memory.
+Void: Return type of the method. void doesn't return any value.
+main: Starting point of the compilation and execution of the program.
+String[] args or String args[] is used for command line argument.
+System.out.println() is used to print statement. Here, System is a class, out is an object of the PrintStream class, println() is a method of the PrintStream class.

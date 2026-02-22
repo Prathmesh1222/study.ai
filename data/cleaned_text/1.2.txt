@@ -1,0 +1,202 @@
+
+TOPIC: [UNIT: Unit1_Basics]
+
+Definition:
+[SOURCE_FILE: 1.2.pptx]
+
+1. JAVA Variables
+JAVA Variables
+A variable is a container which holds the value while the Java program is executed. A variable is assigned with a data type.
+Variable is a name of memory location. There are three types of variables in java: local, instance and static.
+There are two types of data types in Java: primitive and non-primitive.
+A variable is the name of a reserved area allocated in memory.
+In other words, it is a name of the memory location. It is a combination of "vary + able" which means its value can be changed.
+
+
+int a = 10;
+JAVA Variables contd...
+There are three types of variables in Java:
+1) Local Variable
+A variable declared inside the body of the method is called local variable. You can use this variable only within that method and the other methods in the class aren't even aware that the variable exists.
+A local variable cannot be defined with "static" keyword.
+2) Instance Variable
+A variable declared inside the class but outside the body of the method, is called an instance variable. It is not declared as static.
+It is called an instance variable because its value is instance-specific and is not shared among instances.
+3) Static variable
+A variable that is declared as static is called a static variable. It cannot be local. You can create a single copy of the static variable and share it among all the instances of the class. Memory allocation for static variables happens only once when the class is loaded in the memory.
+JAVA Variables contd...
+Example
+public class A
+{
+static int m=100; //static variable void method()
+{
+int n=90; //local variable
+}
+public static void main(String args[])
+{
+int data=50; //instance variable
+}
+}//end of class
+2. JAVA Data Types
+JAVA Data Types
+Data types specify the different sizes and values that can be stored in the variable. There are two types of data types in Java:
+Primitive data types: The primitive data types include boolean, char, byte, short, int, long, float and double.
+Non-primitive	data	types: The	non-primitive	data	types include Classes, Interfaces, and Arrays.
+Java Primitive Data Types
+In	Java	language,	primitive	data	types	are	the	building	blocks	of	data manipulation.
+These are the most basic data types available in Java language.
+Java is a statically-typed programming language.
+It means, all variables must be declared before its use. That is why we need to declare variable's type and name.
+JAVA Data Types
+contd...
+JAVA Data Types
+contd...
+JAVA Data Types
+contd...
+Boolean Data Type
+The Boolean data type is used to store only two possible values: true and false.
+This data type is used for simple flags that track true/false conditions.
+The Boolean data type specifies one bit of information, but its "size" can't be 	defined precisely.
+Example:  Boolean one = false Byte Data Type
+The byte data type is an example of primitive data type. It is an 8-bit signed two's 	complement integer. Its value-range lies between -128 to 127 (inclusive). Its 	minimum value is -128 and maximum value is 127. Its default value is 0.
+The byte data type is used to save memory in large arrays where the memory 	savings is most required. It saves space because a byte is 4 times smaller than an 	integer. It can also be used in place of "int" data type.
+Example: byte a = 10, byte b = -20
+JAVA Data Types	contd...
+Short Data Type
+
+The short data type is a 16-bit signed two's complement integer. Its value-range 	lies between -32,768 to 32,767 (inclusive). Its minimum value is -32,768 and 	maximum value is 32,767. Its default value is 0.
+The short data type can also be used to save memory just like byte data type. A 	short data type is 2 times smaller than an integer.
+short s = 10000, short r = -5000
+Int Data Type
+
+The int data type is a 32-bit signed two's complement integer. Its value-range lies 	between  -  2,147,483,648  (-2^31)  to  2,147,483,647  (2^31  -1)  (inclusive).  Its 	minimum  value  is  -  2,147,483,648and  maximum  value  is  2,147,483,647.  Its 	default value is 0.
+The int data type is generally used as a default data type for integral values unless 	if there is no problem about memory.
+int a = 100000, int b = -200000
+JAVA Data Types	contd...
+Long Data Type
+The long data type is a 64-bit two's complement integer. Its value-range lies 	between -9,223,372,036,854,775,808(-2^63) to 9,223,372,036,854,775,807(2^63
+1)(inclusive). Its minimum value is - 9,223,372,036,854,775,808and maximum value is 9,223,372,036,854,775,807. Its default value is 0. The long data type is used when you need a range of values more than those provided by int.
+Example: long a = 100000L, long b = -200000L
+Float Data Type
+The float data type is a single-precision 32-bit IEEE 754 floating point.Its value 	range is unlimited. It is recommended to use a float (instead of double) if you 	need to save memory in large arrays of floating point numbers. The float data 	type should never be used for precise values, such as currency. Its default value is 	0.0F.
+Example: float f1 = 234.5f
+JAVA Data Types
+contd...
+Double Data Type
+The double data type is a double-precision 64-bit IEEE 754 floating point. Its value 	range is unlimited. The double data type is generally used for decimal values just 	like float. The double data type also should never be used for precise values, such 	as currency. Its default value is 0.0d.
+Example: double d1 = 12.3
+Char Data Type
+The char data type is a single 16-bit Unicode character. Its value-range lies 	between '\u0000' (or 0) to '\uffff' (or 65,535 inclusive).The char data type is used 	to store characters.
+Example: char letter = 'A'
+3. JAVA Operators
+JAVA Operators
+Operators are symbols that perform operations on variables and values.
+For example, + is an operator used for addition, while * is also an operator used for multiplication.
+Java has 6 types
+1. Arithmetic Operators
+2. Assignment Operators
+3. Relational Operators
+4. Logical Operators
+5. Unary Operators
+6. Bitwise Operators
+JAVA Operators	contd...
+Java Arithmetic Operators
+Arithmetic operators are used to perform arithmetic operations on variables and data.
+JAVA Operators	contd...
+Java Logical Operators
+Logical	operators	are	used	to	determine	the	logic	between variables or values:
+4. Java Expression
+Java Expression
+What is statement in Java?
+In  Java,  a statement is  an  executable  instruction  that  tells  the 	compiler what to perform. It forms a complete command to be 	executed and can include one or more expressions. A sentence 	forms a complete idea that can include one or more clauses.
+Expression Statements
+Expression is an essential building block of any Java program
+Generally, it is used to generate a new value. Sometimes, we can 	also assign a value to a variable
+In   Java,   expression   is   the   combination   of   values, 	variables, operators, and method calls.
+Java Expression	contd...
+There are three types of expressions in Java.
+1. Expressions that produce a value.
+For  example, (6+9),  (9%2),  (pi*radius)  +  2.  Note  that  the  expression enclosed in the parentheses will be evaluate first, after that rest of the expression.
+2. Expressions that assign a value.
+For example, number = 90, pi = 3.14.
+3. Expression that neither produces any result nor assigns a value.
+For example, increment or decrement a value by using increment or decrement operator respectively, method invocation, etc. These expressions modify the value of a variable or state (memory) of a program. For example, count++, int sum = a + b; The expression changes only the value of the variable sum. The value of variables a and b do not change, so it is also a side effect.
+5. Exercise on Sample Programs
+Exercise-1
+//Java Unary Operator Example: ++ and -- public class OperatorExample{
+public static void main(String args[]){
+int x=10;
+System.out.println(x++); //10 (11) System.out.println(++x); //12 System.out.println(x--); //12 (11) System.out.println(--x); //10
+}}
+Exercise-2
+//Java Unary Operator Example 2: ++ and -- public class OperatorExample{
+public static void main(String args[]){
+int a=10;
+int b=10;
+System.out.println(a++ + ++a); //10+12=22 System.out.println(b++ + b++); //10+11=21
+}}
+Exercise-3
+//Java Unary Operator Example: ~ and !
+public class OperatorExample{ public static void main(String args[]){ int a=10;
+int b=-10; boolean c=true; boolean d=false;
+System.out.println(~a);
+//-11 (minus of total positive value which starts from 0) System.out.println(~b);
+//9 (positive of total minus, positive starts from 0) System.out.println(!c);	//false (opposite of boolean value) System.out.println(!d); //true
+}}
+Exercise-4
+//Java Arithmetic Operation using Expression
+public class OperatorExample{
+public static void main(String args[]){ System.out.println(10*10/5+3-1*4/2);
+}
+}
+Exercise-5
+Java Left Shift Operator
+The Java left shift operator << is used to shift all of the bits in a value to the left side of a specified number of times.
+//Java Left Shift Operation public class OperatorExample{
+public static void main(String args[]){ System.out.println(10<<2); //10*2^2=10*4=40 System.out.println(10<<3); //10*2^3=10*8=80 System.out.println(20<<2); //20*2^2=20*4=80 System.out.println(15<<4); //15*2^4=15*16=240
+}}
+Exercise-6
+Java Right Shift Operator
+The Java right shift operator >> is used to move the value of the 	left operand to right by the number of bits specified by the right 	operand.
+//Java Right Shift Operation public OperatorExample{
+public static void main(String args[]){
+//10/2^2=10/4=2
+//20/2^2=20/4=5
+//20/2^3=20/8=2
+System.out.println(10>>2); System.out.println(20>>2); System.out.println(20>>3);
+}}
+Exercise-7
+Java Assignment Operator
+Java assignment operator is one of the most common operators. It is used to assign the value on its right to the operand on its left.
+//Java Assignment Operation-1 public class OperatorExample{ public static void main(String args[]){ int a=10;
+int b=20;
+a+=4;	//a=a+4 (a=10+4) b-=4;		//b=b-4 (b=20-4) System.out.println(a); System.out.println(b);
+}}
+Exercise-8
+//Java Assignment Operation-2 public class OperatorExample{ public static void main(String[] args){ int a=10;
+a+=3;	//10+3
+System.out.println(a); a-=4;	//13-4
+System.out.println(a); a*=2;		//9*2 System.out.println(a); a/=2;	//18/2 System.out.println(a);
+}}
+Exercise-8
+//Java Assignment Operation-3 public class OperatorExample{ public static void main(String args[]){ short a=10;
+short b=10;
+//a+=b; //a=a+b internally so fine
+a=a+b; //Compile time error because 10+10=20 now int System.out.println(a);
+}}
+Exercise-9
+//Java type casting
+public class OperatorExample{ public static void main(String args[]){ short a=10;
+short b=10;
+a=(short)(a+b);	//20 which is int now converted to short System.out.println(a);
+}}
+Exercise-10
+// Java Arithmetic operations
+import java.io.*;
+class Arithmatic_Operations
+{	public static void main(String args[])
+{try{
+DataInputStream din=new DataInputStream(System.in); System.out.println("Enter the 2-no's");
+System.out.println("multiplication is" + (i*j)); System.out.println("divisionion is" + (i/j)); System.out.println("modulo division is" +(i%j));
+}catch(Exception e) {}
+} }

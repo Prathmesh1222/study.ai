@@ -1,0 +1,25 @@
+# Environment
+.env
+venv/
+__pycache__/
+
+# Raw data (PDFs/PPTs - too large for Git)
+data/raw/
+
+# Temp files
+temp_audio.mp3
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Flashcard state (user-specific)
+flashcards.json
+
+# Logs
+logs/

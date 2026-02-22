@@ -1,0 +1,140 @@
+
+TOPIC: [UNIT: Unit1_Basics]
+
+Definition:
+[SOURCE_FILE: 1.3.pptx]
+
+If and If-else Statements
+Switch Statement
+For, For-each Statements
+While and do-while Statements
+Break and Continue Statements
+Array
+Content
+Flow of Control
+Java executes one statement after the other in the order they are written
+Many Java statements are flow control statements: Alternation:	if, if else, switch
+Looping: Escapes:
+for, while, do while break, continue, return
+If – The Conditional Statement
+The if statement evaluates an expression and if that evaluation is true then the specified action is taken
+if ( x < 10 ) x = 10;
+If the value of x is less than 10, make x equal to 10
+It could have been written:
+if ( x < 10 ) x = 10;
+Or, alternatively:
+if ( x < 10 ) { x = 10; }
+If… else Statement
+The if … else statement evaluates an expression and performs 	one action if that evaluation is true or a different action if it is 	false.
+if (x != oldx) {
+System.out.print(“x was changed”);
+}
+else	{
+System.out.print(“x is unchanged”);
+}
+Nested if … else
+if (	myVal >	100 ) {
+if (	remainderOn == true) { myVal = mVal % 100;
+}
+else	{
+myVal = myVal / 100.0;
+}
+}
+else
+{
+System.out.print(“myVal is in range”);
+}
+else if
+Useful for choosing between alternatives:
+}
+else	{
+// if all previous	tests have failed, execute code	block #3
+}
+The switch Statement
+switch ( n ) { case 1:
+// execute code block #1 break;
+break; default:
+// if all previous tests fail then
+//execute code block #4
+break;
+}
+The for loop
+Loop n times
+for ( i = 0; i < n; i++ ) {
+// this code body will execute n	times
+// ifrom	0	to n-1
+}
+Nested for:
+for ( j = 0; j < 10; j++ ) { for ( i = 0; i < 20; i++ ){
+// this code body will execute 200 times
+}
+}
+while loops
+while(response == 1) { System.out.print( “ID =” + userID[n]); n++;
+response =	readInt( “Enter “);
+}
+do {… } while loops
+do {
+System.out.print( “ID =” + userID[n] ); n++;
+response =	readInt( “Enter ” );
+}while (response == 1);
+Break
+A break statement causes an	exit from the innermost containing while, do, for or switch statement.
+for ( int i = 0; i < maxID, i++ ) { if ( userID[i] == targetID ) { index = i;
+break;
+}
+} // program jumps here after break
+Continue
+Can only be used with while, do or for.
+The continue statement causes the innermost loop to start the next iteration immediately
+for ( int i	= 0; i <	maxID; i++ ) { if (	userID[i] != -1 ) continue;
+System.out.print( “UserID ” + i	+ “ :” + userID);
+}
+Arrays
+myArray has room for 8 elements
+the elements are accessed by their index
+in Java, array indices start at 0
+An array is a collection of similar items
+An array has a fixed:
+name
+type
+length
+These must be declared when the array is created.
+Arrays sizes cannot be changed during the execution of the code
+myArray =
+0	1	2	3	4	5
+6
+7
+Declaring Arrays
+int myArray[];
+declares myArray to be an array of integers myArray = new int[8];
+sets up 8 integer-sized spaces in memory, labelled
+myArray[0] to myArray[7]
+int myArray[] = new int[8];
+combines the two statements in one line
+Assigning Values
+refer to the array elements by index to store values in them. 	myArray[0] = 3;
+myArray[1] = 6; myArray[2] = 3;	...
+can create and initialise in one step:
+int myArray[] = {3, 6, 3, 1, 6, 3, 4, 1};
+Iterating Through Arrays
+for loops are useful when dealing with arrays:
+for (int i = 0; i < myArray.length; i++) { myArray[i] = getsomevalue();
+}
+Multi Dimensional Array
+Two dimensional array:
+data_type[][] array_name	= new	data_type[x][y];
+For	example:
+int[][] arr =	new	int[10][20]; or
+Int	arr[][]=	new	int[10][20];
+Three dimensional array:
+int[][][] threeD_arr = new int[10][20][30];
+Declaring the Array
+1. Declare the array
+private Student studentList[];
+this declares studentList
+2 .Create the array
+studentList = new Student[10];
+this sets up 10 spaces in memory that can hold references to Student objects
+3. Create Student objects and add them to the array:
+studentList[0] = new Student("Cathy", "Computing");

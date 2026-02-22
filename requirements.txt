@@ -1,0 +1,12 @@
+streamlit
+google-generativeai
+sentence-transformers
+faiss-cpu
+python-dotenv
+graphviz
+gTTS
+Pillow
+pdfplumber
+python-pptx
+pytesseract
+numpy

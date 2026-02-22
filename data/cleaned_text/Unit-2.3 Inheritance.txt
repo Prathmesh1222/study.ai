@@ -1,0 +1,423 @@
+
+TOPIC: [SOURCE_TYPE: PDF]
+
+Definition:
+[FILE: Unit-2.3 Inheritance.pdf]
+
+[PAGE 1]
+Content
+1. Inheritance
+2. super Keyword
+3. Types of Inheritance
+4. Polymorphism
+[PAGE 2]
+1. Inheritance
+[PAGE 3]
+Introduction
+Objectives of the Inheritance:
+Identify the relationship.
+●
+Represent relationships in a Java program.
+●
+Override methods of the base class.
+●
+Identify the constraints.
+●
+Apply the constraints.
+●
+Using final keywork and Abstract classes.
+●
+[PAGE 4]
+Introduction
+Inheritance is the process by which one object acquires
+the properties of another objects.
+By use of inheritance an object need to define only
+qualities that make it unique within class.
+It can inherit its general attributed from its parent.
+It provides code re-usability feature.
+Only single inheritance is allowed among classes.
+All public and protected members of a super class are
+accessible in the subclasses.
+All protected members are also accessible within the
+package.
+[PAGE 5]
+Introduction
+Relationships are classified as follows:
+A kind-Of relationship
+An Is-A relationship
+A part-Of relationship
+A Has-A relationship
+For example: Automobile, Ford, Truck, Car, and Engine.
+A truck is a kind of an automobile.
+A car is a kind of an automobile.
+An engine is a part of an automobile.
+An automobile has an engine.
+The Ford is a car.
+[PAGE 6]
+How to implement?
+Common Procedure
+Step-1: Code the Superclass.
+Step-2: Code the method in the Superclass.
+Step-3: Code the Subclass.
+Step-4: Code the method in the Subclass.
+Step-5: Save the program.
+Step-6: Compile the program.
+Step-7: Execute the program.
+[PAGE 7]
+How to implement?
+Example: Superclass – Applicant
+Subclass - Candidate
+public class Applicant
+{ // Declaring data members
+String applicantID;
+String applicantName;
+String applicantAddress;
+String applicantPosition;
+// Initializing variables
+Applicant ( ) // Constructor without parameter
+{ // Initialize the data members of the applicant class.
+}
+// Rest of the code
+}
+[PAGE 8]
+How to implement?
+Code for method in Superclass
+public class Applicant()
+{
+// Code for displaying the details
+void ( ) // Super class Method
+displayDetails
+{
+// Code for displaying the attributes
+}
+// Rest of the code
+}
+[PAGE 9]
+How to implement?
+Code for candidate as subclass
+public class Candidate extends Applicant
+{
+// Declaring data members
+String interviewDate;
+Boolean candidateStatus;
+// Initializing variables
+Candidate ( ) // Constructor without parameter
+{
+interviewDate = “04 – June – 2010” ;
+candidateStatus = false ;
+}
+// Rest of the code for candidate class
+}
+[PAGE 10]
+How to implement?
+Code the method in subclass
+public class Candidate extends Applicant
+{
+void displayDetails ( )
+{
+// Call the displayDetails ( ) method of the superclass.
+Super . displayDetails ( );
+// Code for displaying the attributes of candidate class.
+}
+// Initializing variables
+Candidate ( )
+{
+// Code for initializing the data members
+}
+// Rest of the code for candidate class
+}
+[PAGE 11]
+Usage of Inheritance
+Reduce redundancy in code: Code redundancy means writing the same code in
+different places, leading to unnecessary replication of code. Inheritance helps
+us to reuse code.
+Maintain code easily, as the code resides at one place (superclass). Any change
+made to the superclass automatically changes the behavior of subclass
+because the subclasses inherit the new behavior automatically.
+Extend the functionality of an existing class by adding more methods to the
+subclass.
+[PAGE 12]
+Points to Remember
+The keyword “extends” is used to inherit a subclass from superclass.
+A class member that has declared as private will remain private to its class. It is not
+accessible by any code outside its class, including subclasses.
+[PAGE 13]
+2. super Keyword
+[PAGE 14]
+Introduction
+The super keyword in java is a reference variable that is used to refer
+immediate parent class object.
+Whenever you create the instance of subclass, an instance of parent class is
+created implicitly i.e. referred by super reference variable.
+Usage of java super Keyword
+super is used to refer immediate parent class instance variable.
+super() is used to invoke immediate parent class constructor.
+super is used to invoke immediate parent class method.
+[PAGE 15]
+Introduction
+Super has two general forms:
+* The first calls the superclass constructor.
+* The second is used to access a member of the superclass that has hidden
+by a member of a subclass.
+[PAGE 16]
+Calling Superclass Constructor
+A subclass can call a constructor method defined by its superclass by use of the
+following form of super:
+super(parameter-list);
+Here, parameter-list specifies any parameters needed by the constructor in the
+superclass. super( ) must always be the first statement executed
+inside a subclass’ constructor.
+[PAGE 17]
+Calling Superclass Member
+The second form of super acts somewhat like this keyword,
+except that it always refers to the superclass of the subclass in
+which it is used.
+General form: super.m
+Here, member can be either a method or instance variable.
+This second form of super is most applicable to situations in
+which member names of a subclass hide members by the
+same name in the superclass.
+[PAGE 18]
+JAVA super Keyword
+class Vehicle{
+int speed=50;
+}
+class Car extends Vehicle{
+int speed=100;
++super.speed
+void display(){
+System.out.println(“Car Speed:”+speed);
+}
+public static void main(String args[]){
+Car c=new Car();
+c.display();
+CCaarr SSppeeeedd::15000
+}
+}
+[PAGE 19]
+JAVA super Keyword contd...
+Classes use constructors to initialize instance
+variables
+When a subclass object is created, its constructor is
+called.
+It is the responsibility of the subclass constructor to
+invoke the appropriate superclass constructors so that
+the instance variables defined in the superclass are
+properly initialized.
+Superclass constructors can be called using the "super"
+keyword in a manner similar to "this“ keyword
+It must be the first line of code in the constructor.
+If a call to super is not made, the system will
+automatically attempt to invoke the no-argument
+constructor of the superclass.
+[PAGE 20]
+JAVA super Keyword contd...
+// When subclass constructor called.
+// Create Superclass Vehicle
+class Vehicle {
+Vehicle() {
+System.out.println(" Vehicle class constructor.");
+}}
+// Create Car subclass by extending class Vehicle.
+class Car extends Vehicle {
+Car() {
+System.out.println("Car class constructor.");
+}}
+// Create Ford subclass by extending Car.
+class Ford extends Car {
+Ford() {
+System.out.println("Ford class constructor.");
+}}
+class CallingCons {
+public static void main(String args[]) {
+Ford f = new Ford();
+}
+}
+[PAGE 21]
+3. Types of Inheritance
+[PAGE 22]
+Introduction
+Single Inheritance: Only one superclass and subclass.
+Multiple Inheritance: More than one superclass.
+(Java uses interfaces)
+Multilevel Inheritance: One superclass and more than
+one subclasses.
+Hierarchical Inheritance: Derived from a Derived class
+only.
+[PAGE 23]
+Introduction
+[PAGE 24]
+Introduction
+[PAGE 25]
+Introduction
+[PAGE 26]
+Single Inheritance
+When a class inherits another class, it is known as a single inheritance.
+class Animal{
+void eat()
+{System.out.println("eating...");}
+}
+class Dog extends Animal{
+void bark()
+{System.out.println("barking...");}
+}
+class InheritanceTest{
+public static void main(String args[]){
+Dog d=new Dog();
+d.bark(); // subclass Dog method
+d.eat(); // superclass Animal method
+}}
+[PAGE 27]
+Multilevel Inheritance
+When there is a chain of inheritance, it is known as multilevel inheritance.
+class Animal{
+void eat(){System.out.println("eating...");}
+}
+class Dog extends Animal{
+void bark(){System.out.println("barking...");}
+}
+class BabyDog extends Dog{
+void weep(){System.out.println("weeping...");}
+}
+class InheritanceTest{
+public static void main(String args[]){
+BabyDog d=new BabyDog();
+d.weep();
+d.bark();
+d.eat();
+}}
+[PAGE 28]
+Hierarchical Inheritance
+When two or more classes inherits a single class.
+class Animal{
+void eat(){System.out.println("eating...");}
+}
+class Dog extends Animal{
+void bark(){System.out.println("barking...");}
+}
+class Cat extends Animal{
+void meow(){System.out.println("meowing...");}
+}
+class InheritanceTest{
+public static void main(String args[]){
+Cat c=new Cat();
+c.meow();
+c.eat();
+c.bark();
+// Compile time error
+}}
+[PAGE 29]
+Multiple Inheritance
+Java does not support multiple inheritance.
+Reason: Dangling References.
+Compile Time Error / Run Time Error
+Solution: Using interface
+Interface:
+Interface is a abstract type that the interface name as like class name.
+Syntax: <access_specifier> interface <interface_name>
+Example: public interface Shapes
+{
+Circle();
+Rectangle();
+[PAGE 30]
+4. Polymorphism
+[PAGE 31]
+Introduction
+Polymorphism in Java is a concept by which we can perform
+a single action in different ways.
+Polymorphism is derived from 2 Greek words: poly and morphs.
+The word "poly" means many and "morphs" means forms. So
+polymorphism means many forms.
+There are two types of polymorphism in Java:
+1. Compile time polymorphism
+2. Run time polymorphism.
+We can perform polymorphism in java by method overloading and
+method overriding.
+If you overload a static method in Java, it is the example of compile
+time polymorphism.
+[PAGE 32]
+Compile Time Polymorphism
+In Java, we can create method that have same name, but different
+parameter lists and different definitions.
+This kind of method creation is called Method Overloading.
+Method Overloading Process:
+When objects are required to perform similar tasks but using
+different input parameters.
+When call a method, Java compiler matches up the method name
+first and then the number and type of parameters to decide which
+one of the declarations to execute.
+[PAGE 33]
+Compile Time Polymorphism cont...
+class Room {
+float length; float breadth;
+Room(float x, float y) // Constructor-1
+{
+length = x;
+breadth = y;
+}
+Room(float x) // Constructor-2
+{
+length = breadth = x;
+}
+int area()
+{
+return(length * breadth);
+}
+}
+[PAGE 34]
+Compile Time Polymorphism cont...
+An object representing a Rectangular Room will be created by using
+constructor-1
+Room room1 = new Room(25.5, 20.0);
+An object representing a Square Room will be created by using
+constructor-2
+Room room2 = new Room(25.0);
+[PAGE 35]
+Run Time Polymorphism
+Method Signature = Method_Name + Parameter_List
+Method Overriding:
+A method defined in the subclass has the same name signature as like
+superclass, then the subclass method overrides (hides/supersedes)
+the definition of the superclass method.
+C++ and C# languages are using Virtual Functions that are same as
+overridden method in Java.
+[PAGE 36]
+Run Time Polymorphism cont...
+Rules for Overriding Methods:
+The method name and the order of arguments should be identical to
+that of the superclass method.
+The return type of both the methods must be the same.
+The overriding method cannot be less accessible than the method it
+overrides.
+For example: If the method override is declared as public in the
+superclass cannot override it with the private keyword in the
+subclass.
+An overriding method cannot raise more exceptions than those raised
+by the method of the superclass (Exception and Errors are raised at
+runtime).
+[PAGE 37]
+Run Time Polymorphism cont...
+Process of Overriding Methods:
+class Chair
+{
+public void adjustHeight()
+{
+System.out.println(“Adjusting Chair Height”);
+}
+}
+public class WheelChair extends Chair {
+public void adjustHeight() // override
+{
+System.out.println(“Adjusting WheelChair Height”);
+}
+public static void main(String[] a) {
+WheelChair wchair = new WheelChair();
+wchair.adjustHeight(); // calling method
+} }
+[PAGE 38]
+Run Time Polymorphism cont...
+Process of Overriding Methods:
+When we call the method “adjustHeight()”, the compiler searches for the
+method in the current class (WheelChair) first.
+If it is not available in the current class then the compiler searches for the
+method in the superclass.

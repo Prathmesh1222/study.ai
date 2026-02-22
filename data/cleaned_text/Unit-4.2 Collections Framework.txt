@@ -1,0 +1,307 @@
+
+TOPIC: [SOURCE_TYPE: PDF]
+
+Definition:
+[FILE: Unit-4.2 Collections Framework.pdf]
+
+[PAGE 1]
+CSE 2006 - Programming in Java
+Course Type: LP Credits: 3
+Prepared by
+C.S Rajpoot
+School of Computing Science and Engineering
+VIT Bhopal University
+[PAGE 2]
+Unit- 4 Java List & I/O Streams
+String classes, methods, operations on Strings and 1-D Arrays, 2-D and
+▪
+Jagged Arrays and its operations
+Java Collections Framework: Java Collection Interface, Java List Interface,
+▪
+Java Array List, Java Vector, Java Stack.
+Streams: Introduction to Byte-oriented and Character-oriented streams,
+▪
+Java I/O Streams, and Java Reader/Writer
+2
+[PAGE 3]
+Collections Framework
+The java.util package contains one of Java’s most powerful
+▪
+subsystems: collections
+A collection is a group of objects. The addition of collections
+▪
+caused fundamental alterations in the structure and architecture
+of many elements in java.util package.
+collections, java.util contains a wide assortment of classes and
+▪
+interfaces that support a broad range of functionality.
+3
+[PAGE 4]
+Collections Framework
+4
+[PAGE 5]
+The java.util
+classes
+are listed
+here.
+5
+[PAGE 6]
+java.util defines the following interfaces
+6
+[PAGE 7]
+Collections Overview
+Java collections framework standardizes the way in which groups of objects are
+▪
+handled by your programs.
+First, the framework had to be high-performance. The implementations for the
+▪
+fundamental collections (dynamic arrays, linked lists, trees, and hash tables) are
+highly efficient.
+Second, the framework had to allow different types of collections to work in a similar
+▪
+manner and with a high degree of interoperability
+Third, extending and/or adapting a collection had to be easy (such as LinkedList,
+▪
+HashSet, and TreeSet)
+Finally, mechanisms were added that allow the integration of standard arrays into
+▪
+the collections framework
+7
+[PAGE 8]
+The Collection Interfaces
+The collections framework defines several interfaces.
+▪
+Interface Description
+Collection Enables you to work with groups of objects; it is at the top of the
+collections hierarchy
+List Extends Collection to handle sequences (lists of objects)
+Set Extends Collection to handle sets, which must contain unique elements
+SortedSet Extends Set to handle sorted sets
+8
+[PAGE 9]
+Methods Defined by Collection
+Method Description
+Adds obj to the invoking collection. Returns true if obj was added to the collection.
+boolean add(Object obj) Returns false if obj is already a member of the collection, or if the collection does not
+allow duplicates.
+boolean addAll Adds all the elements of c to the invoking collection. Returns true if the operation
+(Collection c)
+succeeded (i.e., the elements were added). Otherwise, returns false.
+void clear( ) Removes all elements from the invoking collection.
+boolean containsAll
+Returns true if the invoking collection contains all elements of c. Otherwise, returns false.
+(Collection c)
+boolean isEmpty( ) Returns true if the invoking collection is empty. Otherwise, returns false.
+Iterator iterator( ) Returns an iterator for the invoking collection.
+boolean retainAll Removes all elements from the invoking collection except those in c. Returns true if the
+(Collection c)
+collection changed (i.e., elements were removed). Otherwise, returns false.
+int size( ) Returns the number of elements held in the invoking collection.
+Object[ ] toArray( ) Returns an array that contains all the elements stored in the invoking collection.
+9
+[PAGE 10]
+The List Interface
+Method Description
+Inserts obj into the invoking list at the index passed in index. Any preexisting elements at or
+void add(int index, Object
+obj) beyond the point of insertion are shifted up. Thus, no elements are overwritten.
+boolean addAll(int index, Inserts all elements of c into the invoking list at the index passed in index. Any preexisting
+Collection c) elements at or beyond the point of insertion are shifted up.
+Object get(int index) Returns the object stored at the specified index within the invoking collection.
+Returns the index of the first instance of obj in the invoking list. If obj is not an element of the
+int indexOf(Object obj)
+list, –1 is returned.
+ListIterator listIterator( ) Returns an iterator to the start of the invoking list.
+ListIterator listIterator(int Returns an iterator to the invoking list that begins at the specified index.
+index)
+Removes the element at position index from the invoking list and returns the deleted
+Object remove(int index)
+element. The resulting list is compacted.
+Object set(int index, Object Assigns obj to the location specified by index within the invoking list.
+obj)
+from start to end–1 in the invoking list. Elements in the returned list are also referenced by the
+List subList(int start, int end)
+invoking object.
+10
+[PAGE 11]
+The Collection Classes
+Interface Description
+AbstractCollection Implements most of the Collection interface.
+AbstractList Extends AbstractCollection and implements most of the List interface.
+AbstractSequentialList Extends AbstractList for use by a collection that uses sequential rather than random
+access of its elements.
+LinkedList Implements a linked list by extending AbstractSequentialList
+ArrayList Implements a dynamic array by extending AbstractList
+AbstractSet Extends AbstractCollection and implements most of the Set interface
+HashSet Extends AbstractSet for use with a hash table
+LinkedHashSet Extends HashSet to allow insertion-order iterations.
+TreeSet Implements a set stored in a tree. Extends AbstractSet.
+11
+[PAGE 12]
+List interface
+List interface is the child interface of Collection interface. It inhibits a list type data
+▪
+structure in which we can store the ordered collection of objects. It can have duplicate
+values.
+List interface is implemented by the classes ArrayList, LinkedList, Vector, and Stack.
+▪
+To instantiate the List interface, we must use :
+▪
+List <data-type> list1= new ArrayList();
+List <data-type> list2 = new LinkedList();
+List <data-type> list3 = new Vector();
+List <data-type> list4 = new Stack();
+There are various methods in List interface that can be used to insert, delete, and access
+▪
+the elements from the list.
+12
+[PAGE 13]
+The ArrayList Class
+The ArrayList class extends AbstractList and implements the List interface.
+▪
+ArrayList supports dynamic arrays that can grow as needed. In Java, standard arrays are of
+▪
+a fixed length. After arrays are created, they cannot grow or shrink, which means that you
+must know in advance how many elements an array will hold.
+sometimes, you may not know until run time precisely how large of an array you need.
+▪
+To handle this situation, the collections framework defines ArrayList.
+▪
+In essence, an ArrayList is a variable-length array of object references. That is, an ArrayList
+▪
+can dynamically increase or decrease in size.
+Array lists are created with an initial size.
+▪
+When this size is exceeded, the collection is automatically enlarged.
+▪
+13
+[PAGE 14]
+The ArrayList Class
+ArrayList has the constructors
+▪
+ArrayList( ) : empty array list.
+ArrayList(Collection c) : array list that is initialized with the elements of the collection c
+ArrayList(int capacity)
+: array list that has the specified initial capacity. The capacity is the size of the
+underlying array that is used to store the elements. The capacity grows automatically as
+elements are added to an array list.
+14
+[PAGE 15]
+// Demonstrate ArrayList. // display the array list
+import java.util.*; System.out.println("Contents of al: " + al);
+// Remove elements from the array list
+class ArrayListDemo {
+al.remove("F");
+public static void main(String args[]) {
+al.remove(2);
+// create an array list
+System.out.println("Size of al after deletions: " + al.size());
+ArrayList al = new ArrayList();
+System.out.println("Contents of al: " + al);
+System.out.println("Initial size of al: " + al.size());
+}
+// add elements to the array list
+}
+al.add("C");
+al.add("A");
+al.add("E"); Output:
+al.add("B"); Initial size of al: 0
+al.add("D"); Size of al after additions: 7
+al.add("F"); Contents of al: [C, A2, A, E, B, D, F]
+al.add(1, "A2"); Size of al after deletions: 5
+System.out.println("Size of al after additions: " + Contents of al: [C, A2, E, B, D]
+al.size());
+15
+[PAGE 16]
+Obtaining an Array from an ArrayList
+When working with ArrayList, you will sometimes want to obtain an actual
+▪
+array that contains the contents of the list. you can do this by calling
+toArray( ).
+Several reasons exist why you might want to convert a collection into an
+▪
+array such as:
+■ To obtain faster processing times for certain operations.
+■ To pass an array to a method that is not overloaded to accept a collection.
+■ To integrate your newer, collection-based code with legacy code that does
+not understand collections.
+16
+[PAGE 17]
+// Convert an ArrayList into an array. // sum the array
+for(int i=0; i<ia.length; i++)
+import java.util.*; sum += ((Integer) ia[i]).intValue();
+class ArrayListToArray { System.out.println("Sum is: " + sum);
+public static void main(String args[]) }
+{ }
+// Create an array list
+Output:
+ArrayList al = new ArrayList();
+Contents of al: [1, 2, 3, 4]
+// Add elements to the array list
+Sum is: 10
+al.add(new Integer(1));
+al.add(new Integer(2));
+you cannot store primitive types in a collection, so objects of
+al.add(new Integer(3));
+type Integer are created and stored.
+al.add(new Integer(4));
+Next, toArray( ) is called and it obtains an array of Objects.
+System.out.println("Contents of al: " + al);
+The contents of this array are cast to Integer, and then the
+// get array
+values are summed.
+Object ia[] = al.toArray();
+int sum = 0;
+17
+[PAGE 18]
+Vector
+Vector uses a dynamic array to store the data elements. It is similar to ArrayList.
+▪
+However, It is synchronized and contains many methods that are not the part of
+Collection framework.
+Consider the following example.
+import java.util.*;
+public class TestJavaCollection3{
+public static void main(String args[]){
+Output:
+Vector<String> v=new Vector<String>();
+Ayush
+v.add("Ayush");
+Amit
+v.add("Amit");
+Ashish
+v.add("Ashish");
+Garima
+v.add("Garima");
+Iterator<String> itr=v.iterator();
+while(itr.hasNext()){
+System.out.println(itr.next());
+} } }
+18
+[PAGE 19]
+stack
+The stack is the subclass of Vector. It implements the last-in-first-out data structure, i.e., Stack.
+▪
+The stack contains all of the methods of Vector class and also provides its methods like boolean
+push(), boolean peek(), boolean push(object o), which defines its properties.
+Consider the following example.
+import java.util.*;
+public class TestJavaCollection4{
+public static void main(String args[]){
+Output:
+Stack<String> stack = new Stack<String>();
+stack.push("Ayush"); Ayush
+stack.push("Garvit");
+Amit
+stack.push("Amit");
+Ashish
+stack.push("Ashish");
+Garima
+stack.push("Garima");
+stack.pop();
+Iterator<String> itr=stack.iterator();
+while(itr.hasNext()){
+System. out.println(itr.next());
+https://www.javatpoint.com/collections-in-java
+} } }
+19

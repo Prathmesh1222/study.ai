@@ -1,0 +1,253 @@
+[SOURCE_TYPE: PDF]
+[FILE: Unit-5.1 Database Applications with JDBC.pdf]
+----------------------------------------
+
+[PAGE 1]
+CSE 2006 - Programming in Java
+Course Type: LP Credits: 3
+
+[PAGE 2]
+Unit- 5 Database Applications With JDBC
+• Defining the layout of the JDBC API - Connecting to a
+database by using a JDBC driver – Submitting queries and
+getting results from the database - Specifying JDBC driver
+information externally.
+• Java Persistence API
+• JPA architecture, ORM Components, - Performing CRUD
+operations using the JDBC API.
+• JPA installation, Java Persistence Query language, Creating
+JPA entities, Advanced mappings.
+2
+
+[PAGE 3]
+Database Applications with JDBC Layout
+The current version of JDBC is 4.3. It is the stable release since
+21st September, 2017. It is based on the X/Open SQL Call
+Level Interface. The java.sql package contains classes and
+interfaces for JDBC API.
+3
+
+[PAGE 4]
+Connecting to a database by using a JDBC driver
+• JDBC stands for Java Database Connectivity. JDBC is a Java API to connect
+and execute the query with the database. It is a part of JavaSE (Java
+Standard Edition).
+• JDBC API uses JDBC drivers to connect with the database. There are four
+types of JDBC drivers:
+1. JDBC-ODBC Bridge Driver
+2. Native Driver
+3. Network Protocol Driver
+4. Thin Driver
+• We have discussed the above four drivers in the next chapter.
+• We can use JDBC API to access tabular data stored in any relational
+database.
+• By the help of JDBC API, we can save, update, delete and fetch data from
+the database. It is like Open Database Connectivity (ODBC) provided by
+Microsoft.
+4
+
+[PAGE 5]
+Database Applications with JDBC
+• Why Should We Use JDBC
+• Before JDBC, ODBC API was the database API to connect and execute the
+query with the database. But, ODBC API uses ODBC driver which is written
+in C language (i.e. platform dependent and unsecured). That is why Java has
+defined its own API (JDBC API) that uses JDBC drivers (written in Java
+language).
+• We can use JDBC API to handle database using Java program and can
+perform the following activities:
+1. Connect to the database
+2. Execute queries and update statements to the database
+3. Retrieve the result received from the database.
+5
+
+[PAGE 6]
+JDBC connection to Microsoft Access
+6
+
+[PAGE 7]
+JDBC connection to Microsoft Access
+• JDBC connection using JDBC to a Microsoft Access database. This
+connection is made with the help of a JdbcOdbc driver. You need to use the
+following steps for making a connection to the database.
+• Creating a Database
+• Step 1: Open Microsoft Access and select Blank database option and give
+the database name as File name option
+7
+
+[PAGE 8]
+JDBC connection to Microsoft Access
+• Step 2: Create a table and insert your data into the table
+8
+
+[PAGE 9]
+JDBC connection to Microsoft Access
+• Now Creating DSN of your database
+• Step 3: Open your Control Panel and then select Administrative Tools.
+• Step 4 : Click on Data Source(ODBC)-->System DSN.
+9
+
+[PAGE 10]
+JDBC connection to Microsoft Access
+• Step 5: Now click on add option for making a new DSN.select Microsoft
+Access Driver (*.mdb. *.accdb) and then click on Finish
+10
+
+[PAGE 11]
+JDBC connection to Microsoft Access
+• Step 6: Make your desired Data Source Name and then click on
+the Select option, for example in this article we use the name mydsn
+11
+
+[PAGE 12]
+JDBC connection to Microsoft Access
+• Step 7 Now you select your data source file for storing it and then
+click ok and then click on Create and Finish
+12
+
+[PAGE 13]
+JDBC connection to Microsoft Access
+Step 8: Java program code
+import java.sql.*; import sun.jdbc.odbc.*;
+class exjdbc
+{ String name;
+String rollno,m1,m2;
+void listDetails() throws SQLException
+{ try { Class.forName("sun.jdbc.odbc.JdbcOdbcDriver"); }
+catch(ClassNotFoundException e) { };
+Connection con=DriverManager.getConnection("jdbc:odbc:gk");
+Statement st=con.createStatement();
+String str="INSERT INTO STUD VALUES('"+name+"','"+rollno+"',"+m1+","+m2+");";
+ResultSet rs=st.executeQuery("SELECT * FROM gk");
+System.out.println(" NAME ROLLNO M1 M2 ");
+System.out.println("--------------------------");
+while(rs.next())
+{ name=rs.getString(1); rollno=rs.getString(2); m1=rs.getString(3);
+m2=rs.getString(4); System.out.println(name+"\t"+rollno+"\t"+m1+"\t"+m2);
+} }
+13
+
+[PAGE 14]
+JDBC connection to Microsoft Access
+public static void main(String a[])
+{
+exjdbc e1=new exjdbc();
+try
+{
+e1.listDetails();
+}
+catch(SQLException e2)
+{
+System.out.println(e2);
+}
+}
+}
+14
+
+[PAGE 15]
+JDBC Driver
+• JDBC Driver is a software component that enables java
+application to interact with the database.
+There are 4 types of JDBC drivers:
+1. JDBC-ODBC bridge driver
+2. Native-API driver (partially java driver)
+3. Network Protocol driver (fully java driver)
+4. Thin driver (fully java driver)
+15
+
+[PAGE 16]
+JDBC Driver
+• 1) JDBC-ODBC bridge driver
+• The JDBC-ODBC bridge driver uses ODBC driver to connect to the database.
+The JDBC-ODBC bridge driver converts JDBC method calls into the ODBC
+function calls. This is now discouraged because of thin driver.
+16
+
+[PAGE 17]
+JDBC Driver
+• Oracle does not support the JDBC-ODBC Bridge from Java 8. Oracle
+recommends that you use JDBC drivers provided by the vendor of your
+database instead of the JDBC-ODBC Bridge.
+• Advantages:
+• Easy to use.
+• can be easily connected to any database.
+• Disadvantages:
+• Performance degraded because JDBC method call is converted into the
+ODBC function calls.
+• The ODBC driver needs to be installed on the client machine.
+17
+
+[PAGE 18]
+JDBC Driver
+• 2) Native-API driver
+• The Native API driver uses the client-side libraries of the database. The
+driver converts JDBC method calls into native calls of the database API. It is
+not written entirely in java.
+18
+
+[PAGE 19]
+JDBC Driver
+• 2) Native-API driver
+• Advantage:
+• performance upgraded than JDBC-ODBC bridge driver.
+• Disadvantage:
+• The Native driver needs to be installed on the each client machine.
+• The Vendor client library needs to be installed on client machine.
+19
+
+[PAGE 20]
+JDBC Driver
+• 3) Network Protocol driver
+• The Network Protocol driver uses middleware (application server) that
+converts JDBC calls directly or indirectly into the vendor-specific database
+protocol. It is fully written in java.
+20
+
+[PAGE 21]
+JDBC Driver
+• 3) Network Protocol driver
+• Advantage:
+• No client side library is required because of application server that can
+perform many tasks like auditing, load balancing, logging etc.
+• Disadvantages:
+• Network support is required on client machine.
+• Requires database-specific coding to be done in the middle tier.
+• Maintenance of Network Protocol driver becomes costly because it requires
+database-specific coding to be done in the middle tier.
+21
+
+[PAGE 22]
+JDBC Driver
+• 4) Thin driver
+• The thin driver converts JDBC calls directly into the vendor-specific database
+protocol. That is why it is known as thin driver. It is fully written in Java
+language.
+22
+
+[PAGE 23]
+JDBC Driver
+• 4) Thin driver
+• The thin driver converts JDBC calls directly into the vendor-specific database
+protocol. That is why it is known as thin driver. It is fully written in Java
+language.
+Advantage:
+•Better performance than all
+other drivers.
+•No software is required at client
+side or server side.
+Disadvantage:
+•Drivers depend on the
+Database.
+23
+
+[PAGE 24]
+More on JDBC
+• More on JDBC
+• https://www.javatpoint.com/java-jdbc
+• MS access with JDBC connection
+• https://www.c-sharpcorner.com/UploadFile/433c33/jdbc-con
+nection-to-ms-access/
+• Performing CRUD operations using the JDBC API
+• https://www.javaguides.net/2020/02/java-jdbc-crud-operatio
+ns-in-eclipse.html
+24

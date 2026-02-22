@@ -1,0 +1,2223 @@
+[SOURCE_TYPE: PDF]
+[FILE: Unit-3.2 Java Multithreading.pdf]
+----------------------------------------
+
+[PAGE 1]
+Forms of Parallel Processing
+Distributed computing:
+Coarse-grained parallelism with relatively high communication
+cost (“cluster computing”)
+Fine-grained parallel processing:
+Massive parallelism, single-instruction-stream,
+multiple-data-stream processing. (e.g., for in-camera image
+processing).
+MIMD Multiprocessors with separate memories.
+Parallel Random Access Machines (shared memory)
+Multithreaded architectures (shared memory)
+
+[PAGE 2]
+Tasks and Threads
+Thread: “a thread of execution”
+• “Smaller”, “lighter” than a process
+• smallest unit of processing that can be scheduled
+by an operating system
+• Has its own run-time call stack, copies of the
+CPU’s registers, its own program counter, etc.
+• Process has its own memory address space, but
+threads share one address space
+A single program can be multi-threaded
+• Time-slicing done just like in multiprocessing
+• Repeat: The threads share the same memory
+
+[PAGE 3]
+Task
+A task is an abstraction of a series of steps.
+.
+Might be done in a separate thread
+In Java, there are a number of classes /
+interfaces that basically correspond to this
+Example (details soon): Runnable
+– work done by method run()
+
+[PAGE 4]
+Java: Statements  Tasks
+Consecutive lines of code:
+Interchanging:
+tmp = f1;
+f1 = f2;
+f2 = tmp;
+A method:
+swap(f1, f2);
+A “task” object:
+SwapTask task1= new SwapTask(f1,f2);
+task1.run();
+
+[PAGE 5]
+Why a task object?
+Actions, functions vs. objects. What’s the
+difference?
+Objects:
+Are persistent. Can be stored.
+Can be created and then used later.
+Can be attached to other things.
+Put in Collections.
+Contain state.
+Functions:
+Called, return (not permanent)
+
+[PAGE 6]
+Java Library Classes
+For task-like things:
+Runnable, Callable
+SwingWorker, RecursiveAction, etc.
+Thread class
+Managing tasks and threads
+Executor, ExecutorService
+ForkJoinPool
+In Swing
+The Event-Dispatch Thread
+SwingUtilities.invokeLater()
+
+[PAGE 7]
+Java’s Nested Classes
+You can declare a class inside another class.
+If declared static, can use just like any class.
+If not static
+Can only define objects of that type from within non-static code of
+the enclosing class
+Object of inner-class type can access all fields of the object that
+created it. (Useful!)
+Often used for “helper” classes, e.g. a node object used in a list or
+tree.
+See demo done in Eclipse: TaskDemo.java
+
+[PAGE 8]
+Multitasking and Multithreading
+• Multitasking:
+– refers to a computer's ability to perform multiple jobs
+concurrently
+– more than one program are running concurrently, e.g.,
+UNIX
+• Multithreading:
+– A thread is a single sequence of execution within a
+program
+– refers to multiple threads of control within a single
+program
+– each program can run multiple threads of control within
+it, e.g., Web Browser
+
+[PAGE 9]
+Concurrency vs. Parallelism
+CPU CPU1 CPU2
+
+[PAGE 10]
+What are Threads Good For?
+• To maintain responsiveness of an application
+during a long running task
+• To enable cancellation of separable tasks
+• Some problems are intrinsically parallel
+• To monitor status of some resource (e.g., DB)
+• Some APIs and systems demand it (e.g., Swing)
+
+[PAGE 11]
+Application Thread
+When we execute an application:
+1. The JVM creates a Thread object whose task
+is defined by the main() method
+2. The JVM starts the thread
+3. The thread executes the statements of the
+program one by one
+4. After executing all the statements, the method
+returns and the thread dies
+
+[PAGE 12]
+Multiple Threads in an Application
+• Each thread has its private run-time stack
+• If two threads execute the same method, each will
+have its own copy of the local variables the
+methods uses
+• However, all threads see the same dynamic
+memory, i.e., heap (are there variables on the
+heap?)
+• Two different threads can act on the same object
+and same static fields concurrently
+
+[PAGE 13]
+The Class Thread
+Thread provides a constructor plus methods start, stop, run, interrupt,
+suspend, set priorities, get status, and resume threads.
+public Thread() -- constructor for a new thread. This or the
+constructor for a subclass is called by the client process to create a
+new thread.
+public void start() -- Called by client process to request that the Java
+runtime system run this thread instance.
+public void run() -- We override this method to perform the work that
+we want done by the thread.
+public void stop() -- (deprecated) Usually called by the client process
+to stop the thread.
+public void interrupt() -- Usually called by the client process to get
+the thread’s attention, e.g., so that it can exit its run method and
+thereby stop.
+
+[PAGE 14]
+Example: ThreadDemo.java
+// ThreadDemo.java
+public class ThreadDemo {
+public static void main( String[] args) {
+CountingThread aCounter = new CountingThread("a");
+CountingThread bCounter = new CountingThread("b");
+aCounter.start();
+bCounter.start();
+}
+}
+
+[PAGE 15]
+Class CountingThread (for ThreadDemo)
+public class CountingThread extends Thread {
+String context;
+public CountingThread(String context) {
+this.context = context;
+}
+public void run() {
+for (int i = 0; i < 50; i++) {
+System.out.print(context + i + context + " ");
+}
+}
+}
+
+[PAGE 16]
+(base) ganesan@ganesan:~/Desktop/gg$ java ThreadDemo
+a0a a1a a2a a3a a4a a5a a6a a7a a8a a9a a10a a11a a12a a13a
+a14a a15a a16a a17a a18a a19a a20a a21a a22a a23a a24a a25a
+a26a a27a a28a a29a a30a a31a a32a a33a a34a a35a a36a a37a
+a38a a39a a40a a41a a42a a43a a44a a45a a46a a47a a48a a49a
+b0b b1b b2b b3b b4b b5b b6b b7b b8b b9b b10b b11b b12b b13b
+b14b b15b b16b b17b b18b b19b b20b b21b b22b b23b b24b b25b
+b26b b27b b28b b29b b30b b31b b32b b33b b34b b35b b36b b37b
+b38b b39b b40b b41b b42b b43b b44b b45b b46b b47b b48b b49b
+
+[PAGE 17]
+Creating Threads
+• There are two ways to create our own
+object
+Thread
+1. Subclassing the Thread class and instantiating
+a new object of that class
+2. Implementing the Runnable interface
+• In both cases the method should be
+run()
+implemented
+
+[PAGE 18]
+Extending Thread
+public class ThreadExample extends Thread {
+public void run () {
+for (int i = 1; i <= 100; i++) {
+System.out.println(“---”);
+}
+}
+}
+
+[PAGE 19]
+Thread Methods
+void start()
+– Creates a new thread and makes it runnable
+– This method can be called only once
+void run()
+– The new thread begins its life inside this method
+void stop() (deprecated)
+– The thread is being terminated
+
+[PAGE 20]
+Thread Methods
+void yield()
+– Causes the currently executing thread object to
+temporarily pause and allow other threads to
+execute
+– Allow only threads of the same priority to run
+void sleep(int m) or sleep(int m, int n)
+– The thread sleeps for m milliseconds, plus n
+nanoseconds
+
+[PAGE 21]
+Implementing Runnable
+class RunnableExample implements Runnable {
+public void run () {
+for (int i = 1; i <= 50; i++) {
+System.out.println (“***”);
+}
+}
+}
+
+[PAGE 22]
+A Runnable Object
+• When running the Runnable object, a
+Thread object is created from the Runnable
+object
+• The Thread object’s
+run()
+method calls the
+Runnable object’s
+run()
+method
+• Allows threads to run inside any object,
+regardless of inheritance
+Example – an applet
+that is also a thread
+22
+
+[PAGE 23]
+Starting the Threads
+public class ThreadsStartExample {
+public static void main (String argv[]) {
+new ThreadExample ().start ();
+new Thread(new RunnableExample ()).start ();
+}
+New ThreadStartExample();
+}
+What will we see when running
+ThreadsStartExample?
+
+[PAGE 24]
+(base) ganesan@ganesan:~/Desktop/gg$ java ThreadStartExample
+*** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+*** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+*** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+*** *** *** *** ***
+
+[PAGE 25]
+Handling threads in an Applet
+Declare your Applet subclass to implement Runnable.
+public void run() {...} //Add this to do the work.
+What if the browser goes to another web page or quits?
+Provide a way for the browser to not only suspend the main thread,
+but also to suspend and resume any extra threads:
+public void start() { extraThread.resume(); }
+public void stop() {
+extraThread.timeToSleep=true();
+extraThread.interrupt(); }
+public void destroy() {
+extraThread.timeToQuit=true();
+extraThread.interrupt(); }
+
+[PAGE 26]
+Example: Clock Applet
+// Clock.java
+import java.awt.*;
+import java.applet.*;
+import java.util.*;
+public class Clock extends Applet
+implements Runnable {
+class TimeThread extends Thread {
+boolean timeToQuit = false;
+public TimeThread(Runnable r) { super(r); }
+}
+TimeThread timeThread;
+public Clock() { }
+public void init() {
+timeThread = new TimeThread(this);
+timeThread.start();
+}
+
+[PAGE 27]
+Clock Applet (continued)
+public void paint(Graphics g) {
+g.drawString("The time is: " +
+(new Date()), 100, 50);
+}
+public void run() {
+while (true) {
+try { Thread.sleep(1000); }
+catch (InterruptedException e) {
+if (timeThread.timeToQuit) return; }
+repaint();
+}
+}
+public void start() {}
+public void stop() {}
+public void destroy() {
+timeThread.timeToQuit = true;
+timeThread.interrupt(); }
+}
+
+[PAGE 28]
+Appearance of the Clock Applet
+This is a test of the Clock applet.
+The time is Fri Oct 25 01:32:00 PDT 2013
+Note: Java Applet is deprecated since Java 9. It means Applet API is no
+longer considered important.
+
+[PAGE 29]
+Thread State
+(with deprecated methods)
+create
+new
+start
+run
+running
+ready
+yield
+suspend or sleep
+stop
+resume
+stop
+inactive finished
+stop
+
+[PAGE 30]
+Thread State
+(with new methods)
+create
+new
+start
+run
+running
+ready
+yield, interrupt
+wait, join, or sleep
+interrupt
+return
+inactive finished
+
+[PAGE 31]
+Thread States
+
+[PAGE 32]
+Thread Priority
+• Determines how thread should be treated with respect to the
+others.
+• Context switch - A thread’s priority is used to decide when to
+switch from one running thread to the next thread
+• The rules that determine when a context switch are
+– A thread can voluntarily relinquish control: This is done by
+explicitly yielding, sleeping, or blocking on pending I/O. In this
+scenario, all other threads are observe, and the
+highest-priority thread that is ready to run is given the CPU.
+
+[PAGE 33]
+Thread Priority
+– A thread can be preempted by a higher-priority thread: In this
+case, a lower-priority thread that does not yield the processor
+is simply preempted—no matter what it is doing—by a
+higher-priority thread. Basically, as soon as a higher-priority
+thread wants to run, it does. This is called preemptive
+multitasking.
+
+[PAGE 34]
+Thread Priority
+1 = MIN_PRIORITY, 5= MED_PRIORITY, 10 =
+MAX_PRIORITY
+int P = myThread.getPriority();
+myThread.setPriority(Thread.MAX_PRIORITY);
+As long as a thread of priority P is in the ready
+state, no thread of priority less than P will be
+moved to the runnable state.
+For threads of equal priority, CPU resources are
+shared, round-robin style.
+
+[PAGE 35]
+Thread Groups
+When a number of threads are to be handled in the same manner, they
+can be put in a thread group.
+ThreadGroup tg = new ThreadGroup(“my sprites”);
+There’s a Thread constructor that takes a group as an arg.
+public Thread(ThreadGroup g,
+Runnable target, String name);
+There are many methods for ThreadGroup objects such as
+getMaxPriority, destroy, etc.
+ThreadGroups can contain ThreadGroups. Trees of ThreadGroups are
+therefore possible.
+
+[PAGE 36]
+Application to Animation
+Animation requires controlled timing.
+A thread that uses the sleep(int) method can handle timed updates to a
+display.
+Multiple threads can concurrent tasks, but synchronization may
+become an issue.
+Therefore a single animation thread (but separate from the main
+thread) often works best.
+The main thread handles the user interface and other activities that are
+logically separate from those belonging to the animation.
+
+[PAGE 37]
+Synchronization
+• Two threads to communicate and share a complicated data
+structure, more than one write at a time.
+• Once a thread enters a monitor, all other threads must wait until
+that thread exits the monitor.
+• Once a thread is inside a synchronized method, no other thread can
+call any other synchronized method on the same object
+
+[PAGE 38]
+Synchronization
+Messaging
+Threads to communicate with each other.
+▪
+Taken care by Java and not by Operating System.
+▪
+Allows a thread to enter a synchronized method on an
+▪
+object, and then wait there until some other thread explicitly
+notifies it to come out.
+
+[PAGE 39]
+Thread Class Methods
+Method Meaning
+getName Obtain a thread’s name.
+getPriority Obtain a thread’s priority
+isAlive Determine if a thread is still running.
+join Wait for a thread to terminate
+run Entry point for the thread.
+sleep Suspend a thread for a period of time.
+start Start a thread by calling its run method.
+
+[PAGE 40]
+Alive
+Thread State Diagram
+New Dead
+Thread Thread
+Running
+new ThreadExample();
+while (…) { …
+}
+Runnabl
+e
+thread.sta
+run() method
+rt();
+returns
+Blocked
+Object.wait()
+Thread.sleep()
+blocking IO call
+waiting on a
+monitor
+
+[PAGE 41]
+Example
+public class PrintThread1 extends Thread {
+String name;
+public PrintThread1(String name) {
+this.name = name;
+}
+public void run() {
+for (int i=1; i<100 ; i++) {
+try {
+sleep((long)(Math.random() * 100));
+} catch (InterruptedException ie) { }
+System.out.print(name);
+}
+}
+41
+
+[PAGE 42]
+Example (cont)
+public static void main(String args[]) {
+PrintThread1 a = new PrintThread1("*");
+PrintThread1 b = new PrintThread1("-");
+a.start();
+b.start();
+}
+}
+42
+
+[PAGE 43]
+43
+
+[PAGE 44]
+Multithreading - Introduction
+• A multithreaded program contains two or more parts that can run
+concurrently.
+• Each part of such a program is called a thread, and each thread
+defines a separate path of execution. It is a specialized form of
+multitasking.
+• Multitasking: process-based and thread-based
+• Process-based: (A program in execution – process) run two or more
+programs concurrently
+• Thread-based: Thread is the smallest unit of dispatchable code.
+• For instance, a text editor can format text at the same time that it is
+printing, as long as these two actions are being performed by two
+separate threads.
+44
+
+[PAGE 45]
+Multithreading - Introduction
+Threads are lightweight process. They share the same address space.
+Inter-thread communication is inexpensive, and context switching
+from one thread to the next is low cost.
+45
+
+[PAGE 46]
+Scheduling
+• Thread scheduling is the mechanism used to
+determine how runnable threads are
+allocated CPU time
+• A thread-scheduling mechanism is either
+preemptive or nonpreemptive
+46
+
+[PAGE 47]
+Preemptive Scheduling
+• Preemptive scheduling – the thread scheduler
+preempts (pauses) a running thread to allow
+different threads to execute
+• Nonpreemptive scheduling – the scheduler never
+interrupts a running thread
+• The nonpreemptive scheduler relies on the running
+thread to yield control of the CPU so that other
+threads may execute
+47
+
+[PAGE 48]
+Starvation
+• A nonpreemptive scheduler may cause
+starvation (runnable threads, ready to be
+executed, wait to be executed in the CPU a
+very long time, maybe even forever)
+• Sometimes, starvation is also called a
+livelock
+48
+
+[PAGE 49]
+Time-Sliced Scheduling
+• Time-sliced scheduling
+– the scheduler allocates a period of time that each
+thread can use the CPU
+– when that amount of time has elapsed, the scheduler
+preempts the thread and switches to a different thread
+• Nontime-sliced scheduler
+– the scheduler does not use elapsed time to determine
+when to preempt a thread
+– it uses other criteria such as priority or I/O status
+49
+
+[PAGE 50]
+Java Scheduling
+• Scheduler is preemptive and based on
+priority of threads
+• Uses fixed-priority scheduling:
+– Threads are scheduled according to their priority
+w.r.t. other threads in the ready queue
+50
+
+[PAGE 51]
+Java Scheduling
+• The highest priority runnable thread is always selected for
+execution above lower priority threads
+• When multiple threads have equally high priorities, only one
+of those threads is guaranteed to be executing
+• Java threads are guaranteed to be preemptive-but not time
+sliced
+• Q: Why can’t we guarantee time-sliced scheduling?
+What is the danger of such scheduler?
+51
+
+[PAGE 52]
+Thread Priority
+• Every thread has a priority
+• When a thread is created, it inherits the
+priority of the thread that created it
+• The priority values range from 1 to 10,
+in increasing priority
+52
+
+[PAGE 53]
+Thread Priority (cont.)
+• The priority can be adjusted subsequently using
+the method
+setPriority()
+• The priority of a thread may be obtained using
+getPriority()
+• Priority constants are defined:
+– MIN_PRIORITY=1
+The main thread is
+– MAX_PRIORITY=10
+created with priority
+– NORM_PRIORITY=5
+NORM_PRIORITY
+53
+
+[PAGE 54]
+Some Notes
+• Thread implementation in Java is actually based on
+operating system support
+• Some Windows operating systems support only 7
+priority levels, so different levels in Java may
+actually be mapped to the same operating system
+level
+• What should we do about this?
+• Furthermore, The thread scheduler may choose to
+run a lower priority thread to avoid starvation
+54
+
+[PAGE 55]
+Daemon Threads
+• Daemon threads are “background” threads, that
+provide services to other threads, e.g., the garbage
+collection thread
+• The Java VM will not exit if non-Daemon threads
+are executing
+• The Java VM will exit if only Daemon threads are
+executing
+• Daemon threads die when the Java VM exits
+• Q: Is the main thread a daemon thread?
+55
+
+[PAGE 56]
+Thread and the Garbage Collector
+• Can a Thread object be collected by the
+garbage collector while running?
+– If not, why?
+– If yes, what happens to the execution thread?
+• When can a Thread object be collected?
+56
+
+[PAGE 57]
+ThreadGroup
+• The ThreadGroup class is used to create
+groups of similar threads. Why is this
+needed?
+“Thread groups are best viewed as an
+unsuccessful experiment, and you may simply
+ignore their existence.”
+Joshua Bloch, software architect at Sun
+57
+
+[PAGE 59]
+Executors
+An Executor is an object that manages
+running tasks
+Submit a Runnable to be run with Executor’s
+execute() method
+So, instead of creating a Thread for your Runnable
+and calling start() on that, do this:
+• Get an Executor object, say called exec
+• Create a Runnable, say called myTask
+• Submit for running: exec execute(myTask)
+
+[PAGE 60]
+How to Get an Executor
+Use static methods in Executors library.
+Fixed “thread pool”: at most N threads running at
+one time
+Executor exec =
+Executors.newFixedThreadPool(MAX_THREADS);
+Unlimited number of threads
+Executor exec =
+Executors.newCachedThreadPool();
+
+[PAGE 61]
+Concurrency and Synchronization
+Concurrency:
+Issues related to multiple-threads accessing
+shared data
+Synchronization:
+Methods to manage and control concurrent
+access to shared data by multiple-threads
+Note: Our book defines concurrent
+programming and concurrency to be what
+
+[PAGE 62]
+Possible Bugs in Multithreaded
+Code
+Possible bug #1
+i=1; x=10; x = i + x; // x could be 12
+here
+Possible bug #2
+if ( ! myList.contains(x) )
+myList.add(x); // x could be in list
+twice
+
+[PAGE 63]
+Here’s Why
+See MSD text pp. 759-762
+Multiple threads executing same lines of
+code at “same” time, accessing same data
+values
+
+[PAGE 64]
+How 1 + 10 might be 12
+Thread 1 executes: Thread 2 executes:
+(x is 10, i is 1) (x is 10, i is 1)
+–Get i (1) into register 1 (other thread has CPU)
+–Get x (10) into its register 2 (other thread has CPU)
+(other thread has CPU) –Get i (1) into its register 1
+–Add registers (other thread has CPU)
+–Store result (11) into x (other thread has CPU)
+(x is now 11) –Get x (11) into is register 2
+(other thread has CPU) –Add registers
+(other thread has CPU) –Store result (12) into x
+–Do next line of code (x is now 12)
+(x changes to 12 even
+
+[PAGE 65]
+Synchronization
+Understand the issue with concurrent access to
+shared data?
+Data could be a counter (int) or a data structure (e.g. a
+Map or List or Set)
+A race condition: Two threads will access
+something. They “compete” causing a problem
+A critical section: a block of code that can only
+be safely executed by one thread at a time
+A lock: an object that is “held” by one thread at a
+time, then “released”
+
+[PAGE 66]
+Synchronization in Java (1)
+Any object can serve as a lock
+Separate object: Object myLock = new Object();
+Current instance: the this object
+Enclose lines of code in a synchronized block
+synchronized(myLock) {
+// code here
+}
+More than one thread could try to execute this code,
+but one acquires the lock and the others “block” or
+wait until the first thread releases the lock
+
+[PAGE 67]
+Synchronized Methods
+Common situation: all the code in a method is a
+critical section
+I.e. only one thread at a time should execute that
+method
+E.g. a getter or setter or mutator, or something that
+changes shared state info (e.g. a Map of important
+data)
+Java makes it easy: add synchronized keyword
+to method signature. E.g.
+public synchronized void update(…) {
+
+[PAGE 68]
+Summary So Far
+Concurrent access to shared data
+Can lead to serious, hard-to-find problems
+E.g. race conditions
+The concept of a lock
+Synchronized blocks of code or methods
+One thread at a time
+While first thread is executing it, others block
+
+[PAGE 69]
+Java Serialization
+69
+
+[PAGE 70]
+Serialization basics
+Serialization is the process of transforming
+an in-memory object to a byte stream.
+Deserialization is the inverse process of
+reconstructing an object from a byte stream
+to the same state in which the object was
+previously serialized.
+“Serializing out” and “serializing in” are also
+used.
+
+[PAGE 71]
+The requirements for serialization are
+straightforward:
+Only class instances rather than primitive types
+can be serialized.
+For an object to be serializable, its class or some
+ancestor must implement the empty
+Serializable interface.
+An empty interface is called a marker interface.
+
+[PAGE 72]
+The syntax for serialization is
+straightforward:
+An object is serialized by writing it to an
+ObjectOutputStream.
+An object is deserialized by reading it from an
+ObjectInputStream.
+
+[PAGE 73]
+Serialization code
+FileOutputStream out =
+new FileOutputStream( “save.ser” );
+ObjectOutputStream oos =
+new ObjectOutputStream( out );
+oos.writeObject( new Date() );
+oos.close();
+
+[PAGE 74]
+Deserialization code
+FileInputStream in =
+new FileInputStream( “save.ser” );
+ObjectInputStream ois =
+new ObjectInputStream( in );
+Date d = (Date) ois.readObject();
+ois.close();
+
+[PAGE 75]
+Object graphs
+If an object has references to other objects
+or arrays, the entire object graph is
+serialized when the object is serialized.
+The object graph consists of the object directly
+serialized and any other objects or arrays to which
+the object has direct or indirect references.
+
+[PAGE 76]
+Nonserializable superclasses
+If a serializable class C has a nonserializable
+superclass S, instances of C still can be
+serialized if S has an accessible
+no-argument constructor.
+S’s no-argument constructor is invoked
+automatically during deserialization to construct
+the “S-part” of the deserialized object.
+
+[PAGE 77]
+Serialization and primitive types
+Technically, primitive types cannot be
+serialized or deserialized. However, the
+ObjectOutputStream implements the
+DataOutput interface, which declares
+methods such as writeInt to write
+primitive types to streams.
+ObjectInputStream implements
+DataInput for reading primitive types.
+
+[PAGE 78]
+and fields
+transient static
+A field marked as transient is not
+impacted by serialization.
+During deserialization, transient fields are
+restored to their default values (e.g., transient
+numeric fields are restored to zero).
+static fields are not impacted by
+serialization.
+
+[PAGE 79]
+Customization
+Serialization and deserialization can be
+customized by providing private callback
+methods named writeObject and
+readObject, respectively.
+The Externalizable interface can be
+implemented by classes that need to have
+complete control over serialization and
+deserialization.
+
+[PAGE 80]
+Conclusion
+The same object should not be repeatedly
+serialized to the same stream.
+A class should not be redefined in between
+the serialization and deserialization of its
+instances.
+Classes that need to disable serialization
+can throw a
+NotSerializableException in the
+
+[PAGE 82]
+More Advanced Synchronization
+A semaphore object
+Allows simultaneous access by N threads
+If N==1, then this is known as a mutex (mutual
+exclusion)
+Java has a class Semaphore
+Other Java classes
+• CountDownLatch, Barriers, etc.
+•No more on these in CS2110 this term
+
+[PAGE 83]
+Using CountDownLatch
+Here are some common scenarios and
+demo programs for them
+You’ll use the last of these for the War
+card-game program!
+
+[PAGE 84]
+Scenario #1
+A “manager” thread and N “worker” threads
+Manager starts workers but then must wait for them
+to finish before doing follow-up work
+Solution:
+Manager creates a CountDownLatch with value N
+After workers starts, manager calls await() on that
+When each worker completes its work, it calls
+countDown() on the latch
+After all N call countDown(), manager is un-blocked and
+does follow-up work
+Example use: parallel divide and conquer like
+mergesort
+Code example: SyncDemo0.java
+
+[PAGE 85]
+Thread Rules in Swing
+All operations that update GUI components
+must happen in the EDT
+These components are not thread-safe (later)
+SwingUtilities.invokeLater(Runnable r) is a method
+that runs a task in the EDT when appropriate
+But execute slow tasks in separate worker
+threads
+To make common tasks easier, use a
+
+[PAGE 86]
+SwingWorker
+A class designed to be extended to define a
+task for a worker thread
+Override method doInBackground()
+This is like run() – it’s what you want to do
+Override method done()
+This method is for updating the GUI afterwards
+• It will be run in the EDT
+For more info, see:
+http://download.oracle.com/javase/tutorial/uiswing/concurrency/
+
+[PAGE 87]
+Code Example
+We have a fibonacci demo that runs this
+method both recursively and with a loop
+Original version
+Unresponsive until it completes all its calculations
+Need to run calls to the recursive fibonacci
+in a separate thread
+See Fib2.java that uses SwingWorker to define a
+task
+
+[PAGE 89]
+New Java ForkJoin Framework
+Designed to support a common need
+Recursive divide and conquer code
+Look for small problems, solve without parallelism
+For larger problems
+• Define a task for each subproblem
+• Library provides
+– a Thread manager, called a ForkJoinPool
+– Methods to send your subtask objects to the pool to be
+run, and your call waits until their done
+
+[PAGE 90]
+Turns out that Java’s threads are still too
+“heavy-weight”
+Will be in Java 7 standard libraries, but
+available in Java 6 as a downloaded
+.jar
+file
+Get jsr166y.jar from
+http://gee.cs.oswego.edu/dl/concurrency-interest/index.html
+More info here
+http://www.cs.washington.edu/homes/djg/teachingMaterials/grossmanS
+PAC forkJoinFramework html
+
+[PAGE 91]
+Screenshots: For single- and multi-threaded Mergesort:
+Threads in Eclipse Debug window, and Mac’s CPU usage
+display
+text
+
+[PAGE 92]
+The ForkJoinPool
+The “thread manager”
+Used when calls are made to RecursiveTask’s
+methods fork(), invokeAll(), etc.
+When created, knows how many processors are
+available
+Pretty sophisticated
+• “Steals” time from threads that have nothing to do
+
+[PAGE 93]
+Overview of How To
+Create a ForkJoinPool “thread-manager” object
+Create a task object that extends RecursiveTask
+We’ll ignore use of generics with this (see docs)
+Create a task-object for entire problem and call
+invoke(task) on your ForkJoinPool
+Your task class’ compute() is like Thread.run()
+It has the code to do the divide and conquer
+First, it must check if small problem – don’t use parallelism,
+solve without it
+Then, divide and create >1 new task-objects. Run them:
+
+[PAGE 94]
+Same Ideas as Thread But...
+To use the ForkJoin Framework:
+A little standard set-up code (e.g., create a ForkJoinPool)
+Don’t subclass Thread Do subclass RecursiveTask<V>
+Don’t override run Do override compute
+Don’t call start Do call invoke, invokeAll, fork
+Don’t just call join Do call join which returns answer
+or
+Do call invokeAll on multiple tasks
+
+[PAGE 95]
+Mergesort Example
+Top-level call. Create “main” task and
+submit
+public static void mergeSortFJRecur(Comparable[] list, int
+first,
+int last) {
+if (last - first < RECURSE_THRESHOLD) {
+MergeSort.insertionSort(list, first, last);
+return;
+}
+
+[PAGE 96]
+Mergesort’s Task-Object Nested
+Class
+static class SortTask extends RecursiveAction {
+Comparable[] list;
+Comparable[] tmpList;
+int first, last;
+public SortTask(Comparable[] a, Comparable[] tmp,
+int lo, int hi) {
+this.list = a; this.tmpList = tmp;
+this.first = lo; this.last = hi;
+}
+// continued next slide
+
+[PAGE 97]
+compute() Does Task Recursion
+protected void compute() {
+// in SortTask, continued from previous
+slide
+if (last - first < RECURSE_THRESHOLD)
+MergeSort.insertionSort(list, first, last);
+else {
+int mid = (first + last) / 2;
+// the two recursive calls are replaced by a call to
+invokeAll
+SortTask task1 = new SortTask(list, tmpList, first,
+mid);
+
+[PAGE 98]
+Leaving new ForkJoin framework…
+Java since 1.5 has a more general set of
+classes for “task managers”
+
+[PAGE 99]
+Nice to Have a Thread “Manager”
+If your code is responsible for creating a
+bunch of tasks, linking them with Threads,
+and starting them all, then you have muchto
+worry about:
+What if you start too many threads? Can you
+manage the number of running threads?
+Enough processors?
+Can you shutdown all the threads?
+
+[PAGE 100]
+Executors
+An Executor is an object that manages
+running tasks
+Submit a Runnable to be run with Executor’s
+execute() method
+So, instead of creating a Thread for your Runnable
+and calling start() on that, do this:
+• Get an Executor object, say called exec
+• Create a Runnable, say called myTask
+• Submit for running: exec execute(myTask)
+
+[PAGE 101]
+How to Get an Executor
+Use static methods in Executors library.
+Fixed “thread pool”: at most N threads running at
+one time
+Executor exec =
+Executors.newFixedThreadPool(MAX_THREADS);
+Unlimited number of threads
+Executor exec =
+Executors.newCachedThreadPool();
+
+[PAGE 102]
+Summary So Far
+Create a class that implements a Runnable
+to be your “task object”
+Or if ForkJoin framework, extend RecursiveTask
+Create your task objects
+Create an Executor
+Or a ForkJoinPool
+Submit each task-object to the Executor
+which starts it up in a separate thread
+
+[PAGE 103]
+Concurrency and Synchronization
+Concurrency:
+Issues related to multiple-threads accessing
+shared data
+Synchronization:
+Methods to manage and control concurrent
+access to shared data by multiple-threads
+Note: Our book defines concurrent
+programming and concurrency to be what
+
+[PAGE 104]
+Possible Bugs in Multithreaded
+Code
+Possible bug #1
+i=1; x=10; x = i + x; // x could be 12
+here
+Possible bug #2
+if ( ! myList.contains(x) )
+myList.add(x); // x could be in list
+twice
+
+[PAGE 105]
+Here’s Why
+See MSD text pp. 759-762
+Multiple threads executing same lines of
+code at “same” time, accessing same data
+values
+
+[PAGE 106]
+How 1 + 10 might be 12
+Thread 1 executes: Thread 2 executes:
+(x is 10, i is 1) (x is 10, i is 1)
+–Get i (1) into register 1 (other thread has CPU)
+–Get x (10) into its register 2 (other thread has CPU)
+(other thread has CPU) –Get i (1) into its register 1
+–Add registers (other thread has CPU)
+–Store result (11) into x (other thread has CPU)
+(x is now 11) –Get x (11) into is register 2
+(other thread has CPU) –Add registers
+(other thread has CPU) –Store result (12) into x
+–Do next line of code (x is now 12)
+(x changes to 12 even
+
+[PAGE 107]
+Synchronization
+Understand the issue with concurrent access to
+shared data?
+Data could be a counter (int) or a data structure (e.g. a
+Map or List or Set)
+A race condition: Two threads will access
+something. They “compete” causing a problem
+A critical section: a block of code that can only
+be safely executed by one thread at a time
+A lock: an object that is “held” by one thread at a
+time, then “released”
+
+[PAGE 108]
+Synchronization in Java (1)
+Any object can serve as a lock
+Separate object: Object myLock = new Object();
+Current instance: the this object
+Enclose lines of code in a synchronized block
+synchronized(myLock) {
+// code here
+}
+More than one thread could try to execute this code,
+but one acquires the lock and the others “block” or
+wait until the first thread releases the lock
+
+[PAGE 109]
+Synchronized Methods
+Common situation: all the code in a method is a
+critical section
+I.e. only one thread at a time should execute that
+method
+E.g. a getter or setter or mutator, or something that
+changes shared state info (e.g. a Map of important
+data)
+Java makes it easy: add synchronized keyword
+to method signature. E.g.
+public synchronized void update(…) {
+
+[PAGE 110]
+Summary So Far
+Concurrent access to shared data
+Can lead to serious, hard-to-find problems
+E.g. race conditions
+The concept of a lock
+Synchronized blocks of code or methods
+One thread at a time
+While first thread is executing it, others block
+
+[PAGE 111]
+Some Java Solutions
+There are some synchronized collections
+Classes like AtomicInteger
+Stores an int
+Has methods to operate on it in a thread-safe
+manner
+int getAndAdd(int delta) instead of i=i+1
+
+[PAGE 112]
+More Advanced Synchronization
+A semaphore object
+Allows simultaneous access by N threads
+If N==1, then this is known as a mutex (mutual
+exclusion)
+Java has a class Semaphore
+Other Java classes
+• CountDownLatch, Barriers, etc.
+•No more on these in CS2110 this term
+
+[PAGE 113]
+Unused slides for Spring 2011
+
+[PAGE 114]
+Barriers
+Java class CyclicBarrier
+A rendezvous point or barrier point
+Worker threads wait at a spot until all get there
+Then all proceed
+
+[PAGE 115]
+Using CountDownLatch
+Here are some common scenarios and
+demo programs for them
+You’ll use the last of these for the War
+card-game program!
+
+[PAGE 116]
+Scenario #1
+A “manager” thread and N “worker” threads
+Manager starts workers but then must wait for them
+to finish before doing follow-up work
+Solution:
+Manager creates a CountDownLatch with value N
+After workers starts, manager calls await() on that
+When each worker completes its work, it calls
+countDown() on the latch
+After all N call countDown(), manager is un-blocked and
+does follow-up work
+Example use: parallel divide and conquer like
+mergesort
+Code example: SyncDemo0.java
+
+[PAGE 117]
+Scenario #2
+A “manager” thread and N “worker” threads
+Manager starts workers but wants them to
+“hold” before doing real work until it says “go”
+Solution:
+Manager creates a CountDownLatch with value 1
+After each workers start, it calls await() on that Latch
+At some point, when ready, the manager calls
+countDown() on that Latch
+Now Workers free to continue with their work
+Code example: SyncDemo1.java
+
+[PAGE 118]
+Scenario #3
+Work done in “rounds” where:
+All workers wait for manager to say “go”
+Each worker does its job and then waits for next round
+Manager waits for all workers to complete a round, then does some
+follow-up work
+When that’s done, manager starts next round by telling workers “go”
+Solution: combine the two previous solutions
+First Latch: hold workers until manager is ready
+Second Latch: manager waits until workers finish a round
+Worker’s run() has loop to repeat
+Manager must manage Latches, recreating them at end of round
+Example use: a card game or anything that has that kind of
+structure
+Code example: SyncDemo2.java
+
+[PAGE 119]
+Summary of last section
+Multiple threads may need to cooperate
+Common situation: some workers and a manager
+One thread may need to wait for one or more thread to
+complete
+One or more threads may need to wait to be “released”
+Or a combination of these situations
+Threads all access a CountDownLatch
+await() used to wait for enough calls to countDown()
+
+[PAGE 120]
+Multithreading Client-Server
+120
+
+[PAGE 121]
+HelloServer
+…
+ConnectionHandler ConnectionHandler
+HelloClient HelloClient
+121
+
+[PAGE 122]
+Server
+import java.net.*;import java.io.*;
+class HelloServer {
+public static void main(String[] args) {
+int port = Integer.parseInt(args[0]);
+try {
+ServerSocket server =
+new ServerSocket(port);
+} catch (IOException ioe) {
+System.err.println(“Couldn't run “ +
+“server on port “ + port);
+return;
+}
+122
+
+[PAGE 123]
+while(true) {
+try {
+Socket connection = server.accept();
+ConnectionHandler handler =
+new ConnectionHandler(connection);
+new Thread(handler).start();
+} catch (IOException ioe1) {
+}
+}
+123
+
+[PAGE 124]
+Connection Handler
+// Handles a connection of a client to an
+HelloServer.
+// Talks with the client in the 'hello' protocol
+class ConnectionHandler implements Runnable {
+// The connection with the client
+private Socket connection;
+public ConnectionHandler(Socket connection) {
+this.connection = connection;
+}
+124
+
+[PAGE 125]
+public void run() {
+try {
+BufferedReader reader =
+new BufferedReader(
+new InputStreamReader(
+connection.getInputStream()));
+PrintWriter writer =
+new PrintWriter(
+new OutputStreamWriter(
+connection.getOutputStream()));
+String clientName = reader.readLine();
+writer.println(“Hello “ + clientName);
+writer.flush();
+} catch (IOException ioe) {}
+}
+125
+}
+
+[PAGE 126]
+Client side
+import java.net.*; import java.io.*;
+// A client of an HelloServer
+class HelloClient {
+public static void main(String[] args) {
+String hostname = args[0];
+int port = Integer.parseInt(args[1]);
+Socket connection = null;
+try {
+connection = new Socket(hostname, port);
+} catch (IOException ioe) {
+System.err.println("Connection failed");
+return;
+}
+126
+
+[PAGE 127]
+try {
+BufferedReader reader =
+new BufferedReader(
+new InputStreamReader(
+connection.getInputStream()));
+PrintWriter writer =
+new PrintWriter(
+new OutputStreamWriter(
+connection.getOutputStream()));
+writer.println(args[2]); // client name
+String reply = reader.readLine();
+System.out.println("Server reply: "+reply);
+writer.flush();
+} catch (IOException ioe1) {
+Note that the Client has not
+}
+changed from the
+}
+networking-lecture example
+127
+
+[PAGE 128]
+Concurrency
+• An object in a program can be changed by
+more than one thread
+• Q: Is the order of changes that were
+preformed on the object important?
+128
+
+[PAGE 129]
+Race Condition
+• A race condition – the outcome of a program
+is affected by the order in which the
+program's threads are allocated CPU time
+• Two threads are simultaneously modifying a
+single object
+• Both threads “race” to store their value
+129
+
+[PAGE 130]
+Race Condition Example
+How can we have
+Put red pieces
+Put green pieces
+alternating colors?
+130
+
+[PAGE 131]
+Monitors
+• Each object has a “monitor” that is a token
+used to determine which application thread
+has control of a particular object instance
+• In execution of a synchronized method (or
+block), access to the object monitor must be
+gained before the execution
+• Access to the object monitor is queued
+131
+
+[PAGE 132]
+Monitor (cont.)
+• Entering a monitor is also referred to as
+locking the monitor, or acquiring ownership
+of the monitor
+• If a thread A tries to acquire ownership of a
+monitor and a different thread has already
+entered the monitor, the current thread (A)
+must wait until the other thread leaves the
+monitor
+132
+
+[PAGE 133]
+Critical Section
+• The synchronized methods define critical
+sections
+• Execution of critical sections is mutually
+exclusive. Why?
+133
+
+[PAGE 134]
+Example
+public class BankAccount {
+private float balance;
+public synchronized void deposit(float amount){
+balance += amount;
+}
+public synchronized void withdraw(float amount){
+balance -= amount;
+}
+}
+134
+
+[PAGE 135]
+Critical Sections
+t t t
+3 2 1
+deposi
+t()
+Bank Account
+135
+
+[PAGE 136]
+Java Locks are Reentrant
+• Is there a problem with the following code?
+public class Test {
+public synchronized void a() {
+b();
+System.out.println(“I am at a”);
+}
+public synchronized void b() {
+System.out.println(“I am at b”);
+}
+}
+136
+
+[PAGE 137]
+Static Synchronized Methods
+• Marking a static method as synchronized,
+associates a monitor with the class itself
+• The execution of synchronized static
+methods of the same class is mutually
+exclusive. Why?
+137
+
+[PAGE 138]
+Synchronized Statements
+• A monitor can be assigned to a block:
+synchronized(object) { some-code }
+• It can also be used to monitor access to a data
+element that is not an object, e.g., array:
+void arrayShift(byte[] array, int count) {
+synchronized(array) {
+System.arraycopy (array, count, array,
+0, array.size - count);
+}
+}
+138
+
+[PAGE 139]
+The Followings are Equivalent
+public synchronized void a() {
+//… some code …
+}
+public void a() {
+synchronized (this) {
+//… some code …
+}
+}
+139
+
+[PAGE 140]
+The Followings are Equivalent
+public static synchronized void a() {
+//… some code …
+}
+public void a() {
+synchronized (this.getClass()) {
+//… some code …
+}
+}
+140
+
+[PAGE 141]
+Example
+public class MyPrinter {
+public MyPrinter() {}
+public synchronized void printName(String name) {
+for (int i=1; i<100 ; i++) {
+try {
+Thread.sleep((long)(Math.random() * 100));
+} catch (InterruptedException ie) {}
+System.out.print(name);
+}
+}
+}
+141
+
+[PAGE 142]
+Example
+public class PrintThread2 extends Thread {
+String name;
+MyPrinter printer;
+public PrintThread2(String name, MyPrinter printer){
+this.name = name;
+this.printer = printer;
+}
+public void run() {
+printer.printName(name);
+}
+}
+142
+
+[PAGE 143]
+Example (cont)
+public class ThreadsTest2 {
+public static void main(String args[]) {
+MyPrinter myPrinter = new MyPrinter();
+PrintThread2 a = new PrintThread2("*“, printer);
+PrintThread2 b = new PrintThread2("-“, printer);
+PrintThread2 c = new PrintThread2("=“, printer);
+a.start();
+b.start();
+c.start();
+}
+What will happen?
+}
+143
+
+[PAGE 144]
+144
+
+[PAGE 145]
+Deadlock Example
+public class BankAccount {
+private float balance;
+public synchronized void deposit(float amount) {
+balance += amount;
+}
+public synchronized void withdraw(float amount) {
+balance -= amount;
+}
+public synchronized void transfer
+(float amount, BankAccount target) {
+withdraw(amount);
+target.deposit(amount);
+}
+145
+}
+
+[PAGE 146]
+public class MoneyTransfer implements Runnable {
+private BankAccount from, to;
+private float amount;
+public MoneyTransfer(
+BankAccount from, BankAccount to, float amount){
+this.from = from;
+this.to = to;
+this.amount = amount;
+}
+public void run() {
+source.transfer(amount, target);
+}
+}
+146
+
+[PAGE 147]
+BankAccount aliceAccount = new BankAccount();
+BankAccount bobAccount = new BankAccount();
+...
+// At one place
+Runnable transaction1 =
+new MoneyTransfer(aliceAccount, bobAccount, 1200);
+Thread t1 = new Thread(transaction1);
+t1.start();
+// At another place
+Runnable transaction2 =
+new MoneyTransfer(bobAccount, aliceAccount, 700);
+Thread t2 = new Thread(transaction2);
+t2.start();
+147
+
+[PAGE 148]
+Deadlocks
+t t
+1 2
+aliceAcco
+bobAcco
+unt
+unt
+transf
+transf
+er()
+er()
+?
+withdra withdra
+w() w()
+deposi
+deposi
+t()
+t()
+148
+
+[PAGE 149]
+Thread Synchronization
+• We need to synchronized between
+transactions, for example, the
+consumer-producer scenario
+149
+
+[PAGE 150]
+Wait and Notify
+• Allows two threads to cooperate
+• Based on a single shared lock object
+– Marge put a cookie wait and notify Homer
+– Homer eat a cookie wait and notify Marge
+• Marge put a cookie wait and notify Homer
+• Homer eat a cookie wait and notify Marge
+150
+
+[PAGE 151]
+The Method
+wait()
+• The method is part of the
+wait()
+interface
+java.lang.Object
+• It requires a lock on the object’s monitor to
+execute
+• It must be called from a synchronized
+method, or from a synchronized segment of
+code. Why?
+151
+
+[PAGE 152]
+The wait() Method
+• wait() causes the current thread to wait until
+another thread invokes the notify() method
+or the notifyAll() method for this object
+• Upon call for wait(), the thread releases
+ownership of this monitor and waits until
+another thread notifies the waiting threads of
+the object
+152
+
+[PAGE 153]
+The wait() Method
+is also similar to
+• wait() yield()
+– Both take the current thread off the execution stack and
+force it to be rescheduled
+• However, is not automatically put back into
+wait()
+the scheduler queue
+– notify() must be called in order to get a thread back into
+the scheduler’s queue
+– The objects monitor must be reacquired before the
+thread’s run can continue
+What is the difference
+between wait and sleep?
+153
+
+[PAGE 154]
+Consumer
+• Consumer:
+synchronized (lock) {
+while (!resourceAvailable()) {
+lock.wait();
+}
+consumeResource();
+}
+154
+
+[PAGE 155]
+Producer
+• Producer:
+produceResource();
+synchronized (lock) {
+lock.notifyAll();
+}
+155
+
+[PAGE 156]
+Wait/Notify Sequence
+Lock
+Object
+1. synchronized(lock){ 3. produceResource()
+4. synchronized(lock)
+2. lock.wait();
+5. lock.notify();
+9. consumeResource();
+6.}
+10. }
+7. Reacquire lock
+8.Return from wait()
+Consumer Producer
+Thread Thread
+156
+
+[PAGE 157]
+Wait/Notify Sequence
+Lock
+Object
+1. synchronized(lock){ 3. produceResource()
+4. synchronized(lock)
+2. lock.wait();
+5. lock.notify();
+9. consumeResource();
+6.}
+10. }
+7. Reacquire lock
+8. Return from wait()
+Consumer Producer
+Thread Thread
+157
+
+[PAGE 158]
+Wait/Notify Sequence
+Lock
+Object
+1. synchronized(lock){ 3. produceResource()
+4. synchronized(lock)
+2. lock.wait();
+5. lock.notify();
+9. consumeResource();
+6.}
+10. }
+7. Reacquire lock
+8. Return from wait()
+Consumer Producer
+Thread Thread
+158
+
+[PAGE 159]
+Wait/Notify Sequence
+Lock
+Object
+1. synchronized(lock){ 3. produceResource()
+4. synchronized(lock)
+2. lock.wait();
+5. lock.notify();
+9. consumeResource();
+6.}
+10. }
+7. Reacquire lock
+8. Return from wait()
+Consumer Producer
+Thread Thread
+159
+
+[PAGE 160]
+Wait/Notify Sequence
+Lock
+Object
+1. synchronized(lock){ 3. produceResource()
+4. synchronized(lock)
+2. lock.wait();
+5. lock.notify();
+9. consumeResource();
+6.}
+10. }
+7. Reacquire lock
+8. Return from wait()
+Consumer Producer
+Thread Thread
+160
+
+[PAGE 161]
+Wait/Notify Sequence
+Lock
+Object
+1. synchronized(lock){ 3. produceResource()
+4. synchronized(lock)
+2. lock.wait();
+5. lock.notify();
+9. consumeResource();
+6.}
+10. }
+7. Reacquire lock
+8. Return from wait()
+Consumer Producer
+Thread Thread
+161
+
+[PAGE 162]
+Wait/Notify Sequence
+Lock
+Object
+1. synchronized(lock){ 3. produceResource()
+4. synchronized(lock)
+2. lock.wait();
+5. lock.notify();
+9. consumeResource();
+6.}
+10. }
+7. Reacquire lock
+8. Return from wait()
+Consumer Producer
+Thread Thread
+162
+
+[PAGE 163]
+Wait/Notify Sequence
+Lock
+Object
+1. synchronized(lock){ 3. produceResource()
+4. synchronized(lock)
+2. lock.wait();
+5. lock.notify();
+9. consumeResource();
+6.}
+10. }
+7. Reacquire lock
+8. Return from wait()
+Consumer Producer
+Thread Thread
+163
+
+[PAGE 164]
+Wait/Notify Sequence
+Lock
+Object
+1. synchronized(lock){ 3. produceResource()
+4. synchronized(lock)
+2. lock.wait();
+5. lock.notify();
+9. consumeResource();
+6.}
+10. }
+7. Reacquire lock
+8. Return from wait()
+Consumer Producer
+Thread Thread
+164
+
+[PAGE 165]
+Wait/Notify Sequence
+Lock
+Object
+1. synchronized(lock){ 3. produceResource()
+4. synchronized(lock)
+2. lock.wait();
+5. lock.notify();
+9. consumeResource();
+6.}
+10. }
+7. Reacquire lock
+8. Return from wait()
+Consumer Producer
+Thread Thread
+165
+
+[PAGE 166]
+Wait/Notify Sequence
+Lock
+Object
+1. synchronized(lock){ 3. produceResource()
+4. synchronized(lock)
+2. lock.wait();
+5. lock.notify();
+9. consumeResource();
+6.}
+10. }
+7. Reacquire lock
+8.
+Return from wait()
+Consumer Producer
+Thread Thread
+166
+
+[PAGE 167]
+The Simpsons Scenario:
+SimpsonsTest
+public class SimpsonsTest {
+public static void main(String[] args) {
+CookyJar jar = new CookyJar();
+Homer homer = new Homer(jar);
+Marge marge = new Marge(jar);
+new Thread(homer).start();
+new Thread(marge).start();
+}
+}
+167
+
+[PAGE 168]
+The Simpsons Scenario: Homer
+public class Homer implements Runnable {
+CookyJar jar;
+public Homer(CookyJar jar) {
+this.jar = jar;
+}
+public void eat() {
+jar.getCooky("Homer");
+try {
+Thread.sleep((int)Math.random() * 1000);
+} catch (InterruptedException ie) {}
+}
+public void run() {
+for (int i = 1 ; i <= 10 ; i++) eat();
+}
+168
+}
+
+[PAGE 169]
+The Simpsons Scenario: Marge
+public class Marge implements Runnable {
+CookyJar jar;
+public Marge(CookyJar jar) {
+this.jar = jar;
+}
+public void bake(int cookyNumber) {
+jar.putCooky("Marge", cookyNumber);
+try {
+Thread.sleep((int)Math.random() * 500);
+} catch (InterruptedException ie) {}
+}
+public void run() {
+for (int i = 0 ; i < 10 ; i++) bake(i);
+}
+169
+}
+
+[PAGE 170]
+The Simpsons Scenario: CookieJar
+public class CookyJar {
+private int contents;
+private boolean available = false;
+public synchronized void getCooky(String who) {
+while (!available) {
+try {
+wait();
+} catch (InterruptedException e) { }
+}
+available = false;
+notifyAll();
+System.out.println( who + " ate cooky " +
+contents);
+}
+170
+
+[PAGE 171]
+The Simpsons Scenario: CookieJar
+public synchronized void putCooky(String who,
+int value) {
+while (available) {
+try {
+wait();
+} catch (InterruptedException e) { }
+}
+contents = value;
+available = true;
+System.out.println(who + " put cooky " +
+contents + " in the jar");
+notifyAll();
+}
+}
+171
+
+[PAGE 172]
+Timers and TimerTask
+• The classes Timer and TimerTask are part
+of the java.util package
+• Useful for
+– performing a task after a specified delay
+– performing a sequence of tasks at constant time
+intervals
+172
+
+[PAGE 173]
+Scheduling Timers
+• The schedule method of a timer can get as
+parameters:
+– Task, time
+– Task, time, period
+– Task, delay
+– Task, delay, period
+When to
+What to do At which rate
+start
+173
+
+[PAGE 174]
+Timer Example
+import java.util.*;
+public class CoffeeTask extends TimerTask {
+public void run() {
+System.out.println(“Time for a Coffee Break”);
+}
+public static void main(String args[]) {
+Timer timer = new Timer();
+long hour = 1000 * 60 * 60;
+timer.schedule(new CoffeeTask(), 0, 8 * hour);
+timer.scheduleAtFixedRate(new CoffeeTask(),
+new Date(), 24 * hour);
+}
+174
+}
+
+[PAGE 175]
+Stopping Timers
+• A Timer thread can be stopped in the
+following ways:
+– Apply cancel() on the timer
+– Make the thread a daemon
+– Remove all references to the timer after all the
+TimerTask tasks have finished
+– Call System.exit()
+175
+
+[PAGE 176]
+PACKAGES
+A java package is a group of similar types of classes, interfaces and
+sub-packages.
+Package in java can be categorized in two form, built-in package and
+user-defined package.
+There are many built-in packages such as java, lang, awt, javax, swing,
+net, io, util, sql, etc.
+Advantages:
+Java package is used to categorize the classes and interfaces, so that
+they can be easily maintained.
+Java package provides access protection.
+Java package removes naming collision.
+
+[PAGE 177]
+PACKAGES contd...
+Example:
+package mypackage;
+public class Simple {
+public static void main(String args[]) {
+System.out.println(“Welcome to my package”);
+}}
+Compilation:
+javac -d.<filename.java>
+Javac -d . Simple.java
+Execution:
+java <package_name> . <file_name>
+java mypackage . Simple
+
+[PAGE 178]
+PACKAGES contd...
+Types of Packages:
+1. Built-in Packages: In Java packages consist of a large number of
+classes, interfaces.
+For example: In java API – lang, io, util, awt, applet, net.
+2. User Defined Packages: User created packages.
+a. A directory so called package.
+b. Inside this directory, creating related classes and
+Interfaces for this package name.
+Accessing Techniques:
+1. Using Package Name: import package . *;
+a. Import all classes
+b. Import specifig class
+2. import package . Classname;
+3. fully qualified name
+
+[PAGE 179]
+PACKAGES contd...
+Creation of User-defined Package:
+Create a directory and named it – myPackage
+Create a class inside this directory – MyClass
+// Package creation
+package myPackage;
+public class MyClass {
+public void getNames(String n)
+System.out.println(n);
+} }
+// Class creation
+Import myPackage . MyClass;
+Public class MyName {
+Public static void main(String args[]) {
+String name = “G. Ganesan”;
+MyClass c = new MyClass(); // Creating instance of MyClass
+c.getNames(name); // Passing the argument to the method
+// in class in package.
+} }
+
+[PAGE 180]
+PACKAGES contd...
+Creation of User-defined Package:
+Create a directory and named it – myPackage
+Create a class inside this directory – MyClass
+// Package creation
+package myPackage;
+public class MyClass {
+public void getNames(String n)
+System.out.println(n);
+} }
+// Class creation
+Import myPackage . MyClass;
+Public class MyName {
+Public static void main(String args[]) {
+String name = “G. Ganesan”;
+MyClass c = new MyClass(); // Creating instance of MyClass
+c.getNames(name); // Passing the argument to the method
+// in class in package.
+} }
+
+[PAGE 181]
+Storage Method
+Directory Structure
+The package name is closely associated with the directory structure
+used to store the classes.
+The classes and its entities belongs to a specific package are stored
+together in the same directory.
+Also they are stored in a syb-directory structure specified by its package
+name.
+For example: <Base_Directory> . <Sub_Directory>
+Package: MyPackage Class: MyClass
+($BASE_DIR\com\gg\project\java\interim\MyPackage\
+MyClass.class)
+com.gg.project.java.interim.MyPackage
+CLASSPATH
+The base directory located anywhere in the file system.
+Java compiler and runtime must be informed about the location of the
+$BASE_DIR to locate the classes. This is accomplished by an
+environment variable called “CLASSPATH”.
+Find: PATH, SET PATH, SET CLASSPATH
+
+[PAGE 182]
+Points to Remember
+1. Every class is part of some package.
+2. If no package is speicified, the classes in the file goes into a speical
+unnamed package.
+3. All classes/interfaces in a file are part of the same package. Multiple
+files can specify the same package name.
+4. If package name is specified, the file must be in a subdirectory called
+name. (The directory name must match the package name)
+5. We can access public classes in another (named) package using
+import package_name . class_name;
+QUERIES?

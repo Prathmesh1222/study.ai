@@ -1,0 +1,602 @@
+
+TOPIC: [SOURCE_TYPE: PDF]
+
+Definition:
+[FILE: Unit-4.1 Srings - Array.pdf]
+
+[PAGE 1]
+CSE 2006 - Programming in Java
+Course Type: LP Credits: 3
+Prepared by
+C.S Rajpoot
+School of Computing Science and Engineering
+VIT Bhopal University
+[PAGE 2]
+Unit- 4 Java List & I/O Streams
+String classes, methods, operations on Strings and
+1-D Arrays, 2-D and Jagged Arrays and its operations
+Java Collections Framework, Java Collection
+Interface, Java List Interface, Java Array List, Java
+Vector, Java Stack
+Streams: Introduction to Byte-oriented and
+Character-oriented streams, Java I/O Streams, and
+Java Reader/Writer
+2
+[PAGE 3]
+Java string classes
+In Java, string is basically an object that represents sequence of
+char values.
+An array of characters works same as Java string. For example:
+char[] ch={'j','a','v','a','t','p','o','i','n','t'};
+String s=new String(ch);
+is same as:
+String s="javaprogramming";
+Java String class provides a lot of methods to perform operations
+on strings such as compare(), concat(), equals(), split(), length(),
+replace(), compareTo(), intern(), substring() etc.
+The java.lang.String class
+implements Serializable, Comparable and CharSequence interfaces.
+3
+[PAGE 4]
+Java string classes
+What is String in Java?
+Generally, String is a sequence of characters. But in Java, string is
+an object that represents a sequence of characters. The
+java.lang.String class is used to create a string object.
+How to create a string object?
+There are two ways to create String object:
+1. By string literal
+2. By new keyword
+4
+[PAGE 5]
+Java string classes
+1) String Literal
+Java String literal is created by using double quotes. For Example:
+String s="welcome";
+Each time you create a string literal, the JVM checks the "string
+constant pool" first. If the string already exists in the pool, a
+reference to the pooled instance is returned. If the string doesn't
+exist in the pool, a new string instance is created and placed in the
+pool.
+For example:
+String s1="Welcome";
+String s2="Welcome";//It doesn't create a new instance
+Why Java uses the concept of String literal?
+To make Java more memory efficient (because no new objects are created
+if it exists already in the string constant pool).
+5
+[PAGE 6]
+Java string classes
+2) By new keyword
+String s=new String("Welcome");
+//creates two objects and one reference variable
+In such case, JVM will create a new string object in normal
+(non-pool) heap memory, and the literal "Welcome" will be
+placed in the string constant pool.
+The variable s will refer to the object in a heap (non-pool).
+6
+[PAGE 7]
+Java string classes
+Java String Example
+StringExample.java
+public class StringExample{
+public static void main(String args[]){
+String s1="java";//creating string by Java string literal
+char ch[]={'s','t','r','i','n','g','s'};
+String s2=new String(ch);//converting char array to string
+String s3=new String("example");//creating Java string by new keyword
+System.out.println(s1);
+Output:
+System.out.println(s2);
+java
+System.out.println(s3); strings
+example
+}}
+The above code, converts a char array into a String object. And displays
+the String objects s1, s2, and s3 on console using println() method.
+7
+[PAGE 8]
+Java String class method
+No. Method Description
+1 char charAt(int index) It returns char value for the particular
+index
+2 int length() It returns string length
+3 static String format(String format, It returns a formatted string.
+Object... args)
+4 static String format(Locale l, String format, It returns formatted string with given
+Object... args) locale.
+5 String substring(int beginIndex) It returns substring for given begin
+index.
+6 String substring(int beginIndex, int It returns substring for given begin index
+endIndex) and end index.
+7 boolean contains(CharSequence s) It returns true or false after matching
+the sequence of char value.
+8 static String join(CharSequence delimiter, It returns a joined string.
+CharSequence... elements)
+9 static String join(CharSequence delimiter, It returns a joined string.
+Iterable<? extends CharSequence>
+elements)
+10 boolean equals(Object another) It checks the equality of string with the
+given object. 8
+[PAGE 9]
+Java String class method
+No. Method Description
+11 boolean isEmpty() It checks if string is empty.
+12 String concat(String str) It concatenates the specified string.
+13 String replace(char old, char new) It replaces all occurrences of the
+specified char value.
+14 String replace(CharSequence old, It replaces all occurrences of the
+CharSequence new) specified CharSequence.
+15 static String equalsIgnoreCase(String It compares another string. It doesn't
+another) check case.
+16 String[] split(String regex) It returns a split string matching regex.
+17 String[] split(String regex, int limit) It returns a split string matching regex
+and limit.
+18 String intern() It returns an interned string.
+19 int indexOf(int ch) It returns the specified char value index.
+20 int indexOf(int ch, int fromIndex) It returns the specified char value index
+starting with given index.
+21 int indexOf(String substring) It returns the specified substring index.
+9
+[PAGE 10]
+Java String class method
+No. Method Description
+22 int indexOf(String substring, int It returns the specified substring index
+fromIndex) starting with given index.
+23 String toLowerCase() It returns a string in lowercase.
+24 String toLowerCase(Locale l) It returns a string in lowercase using
+specified locale.
+25 String toUpperCase() It returns a string in uppercase.
+26 String toUpperCase(Locale l) It returns a string in uppercase using
+specified locale.
+27 String trim() It removes beginning and ending spaces
+of this string.
+28 static String valueOf(int value) It converts given type into string. It is an
+overloaded method.
+10
+[PAGE 11]
+String Length
+length of a string is the number of characters that it contains
+String s = “Sample”; System.out.println(s.length()); //6
+Special String Operations
+String Literals
+▪
+Explicitly create a String instance from an array of characters by using the new
+▪
+operator.
+char chars[] = { 'a', 'b', 'c' };
+String s1 = new String(chars);
+String s2 = "abc";
+System.out.println("abc".length());
+String Concatenation
+▪
++ operator.
+▪
+String age = "9“;
+String s = "He is " + age + " years old.“;
+System.out.println(s);
+He is 9 years old.
+11
+[PAGE 12]
+Special String Operations
+String Concatenation with Other Data Types
+String s = "four: " + 2 + 2; System.out.println(s); four: 22
+String s = "four: " + (2 + 2); four: 4
+String Conversion and toString( )
+valueOf( ) is overloaded for all the simple types and for type Object.
+For the simple types, valueOf( ) returns a string that contains the
+human-readable equivalent of the value with which it is called.
+For objects, valueOf( ) calls the toString( ) method on the object.
+Every class implements toString( ) because it is defined by Object
+String toString( )
+To implement toString( ), simply return a String object that contains the
+human-readable string that appropriately describes an object of your class.
+12
+[PAGE 13]
+class Box {
+double width;
+double height;
+double depth;
+Box(double w, double h, double d) {
+width = w;
+height = h; Output:
+depth = d; Dimensions are 10.0 by 14.0 by 12.0
+} Box b: Dimensions are 10.0 by 14.0 by 12.0
+public String toString() {
+return "Dimensions are " + width + " by " + depth + " by " + height + ".";
+}
+}
+class toStringDemo {
+public static void main(String args[]) {
+Box b = new Box(10, 12, 14);
+String s = "Box b: " + b; // concatenate Box object
+System.out.println(b); // convert Box to string
+System.out.println(s);
+}
+} 13
+[PAGE 14]
+Character Extraction
+charAt( )
+To extract a single character from a String
+char charAt(int where)
+char ch;
+ch = "abc".charAt(1); Output : a
+getChars( )
+If you need to extract more than one character at a time
+void getChars(int sourceStart, int sourceEnd, char target[ ], int targetStart)
+String s = "This is a demo of the getChars method.";
+s.getChars(start, end, buf, 0);
+System.out.println(buf); Output : demo
+getBytes( )
+that stores the characters in an array of bytes - byte[ ] getBytes( )
+toCharArray( )
+convert all the characters in a String object into a character array - char[ ]
+toCharArray( )
+14
+[PAGE 15]
+String Comparison
+equals( ) and equalsIgnoreCase( )
+Compare two strings for equality - boolean equals(Object str)
+Comparison that ignores case differences - boolean
+equalsIgnoreCase(String str)
+regionMatches( )
+Compares a specific region inside a string with another specific region in
+another string
+boolean regionMatches(int startIndex, String str2, int str2StartIndex, int
+numChars)
+boolean regionMatches(boolean ignoreCase,int startIndex,String str2,int
+str2StartIndex,int numChars)
+startsWith( ) and endsWith( )
+The startsWith( ) method determines whether a given String begins with
+a specified string
+The endsWith( ) determines whether the String in question ends with a
+specified string.
+"Foobar".endsWith("bar") and "Foobar".startsWith("Foo") -> true
+15
+[PAGE 16]
+String Comparison
+equals( ) Versus ==
+The equals( ) method compares the characters inside a String object.
+The == operator compares two object references to see whether they refer to the
+same instance.
+String s1 = "Hello“; String s2 = new String(s1);
+System.out.println(s1 + " equals " + s2 + " -> " + s1.equals(s2)); TRUE
+System.out.println(s1 + " == " + s2 + " -> " + (s1 == s2)); FALSE
+compareTo( )
+String being compared with the invoking String
+compareToIgnoreCase( ) - want to ignore case differences when comparing two
+strings
+int compareToIgnoreCase(String str)
+Value Meaning
+Less than zero The invoking string is less than str in dictionary
+order.
+Greater than The invoking string is greater than str in dictionary
+zero order.
+Zero The two strings are equal.
+16
+[PAGE 17]
+Searching Strings
+To search a string for a specified character or substring
+indexOf( ) Searches for the first occurrence of a character or substring.
+lastIndexOf( ) Searches for the last occurrence of a character or substring.
+int indexOf(int ch) int lastIndexOf(int ch)
+int indexOf(String str) int lastIndexOf(String str)
+int indexOf(int ch, int startIndex) int lastIndexOf(int ch, int startIndex)
+int indexOf(String str, int startIndex) int lastIndexOf(String str, int startIndex)
+17
+[PAGE 18]
+// Demonstrate indexOf() and lastIndexOf().
+class indexOfDemo {
+public static void main(String args[]) {
+String s = "Now is the time for all good men to come to the aid of their country.";
+System.out.println(s);
+System.out.println("indexOf(t) = " +s.indexOf('t'));
+System.out.println("lastIndexOf(t) = " +s.lastIndexOf('t'));
+System.out.println("indexOf(the) = " +s.indexOf("the"));
+System.out.println("lastIndexOf(the) = " +s.lastIndexOf("the"));
+System.out.println("indexOf(t, 10) = " +s.indexOf('t', 10));
+System.out.println("lastIndexOf(t, 60) = " +s.lastIndexOf('t', 60));
+System.out.println("indexOf(the, 10) = " +s.indexOf("the", 10));
+System.out.println("lastIndexOf(the, 60) = " +s.lastIndexOf("the", 60));
+}
+Output:
+}
+Now is the time for all good men to come to the aid of their country.
+indexOf(t) = 7
+lastIndexOf(t) = 65
+indexOf(the) = 7
+lastIndexOf(the) = 55
+indexOf(t, 10) = 11
+lastIndexOf(t, 60) = 55
+indexOf(the, 10) = 44
+lastIndexOf(the, 60) = 55 18
+[PAGE 19]
+Modifying a String
+substring( ) - To extract a substring
+String substring(int startIndex)
+String substring(int startIndex, int endIndex)
+concat( ) – To concatenate two strings
+String concat(String str)
+String s1 = "one";
+String s2 = s1.concat("two"); || String s2 = s1 + "two";
+replace( ) - replaces all occurrences one character in invoking string with
+another character.
+String replace(char original, char replacement)
+String s = "Hello".replace('l', 'w'); Output: Hewwo
+trim( ) - returns a copy of the invoking string from which any leading and
+trailing whitespace has been removed.
+String trim( )
+String s = " Hello World ".trim(); Output: Hello World
+19
+[PAGE 20]
+// Substring replacement.
+result = result + org.substring(i +
+class StringReplace {
+search.length());
+public static void main(String
+args[]) { org = result;
+String org = "This is a test. }
+This is, too."; } while(i != -1);
+String search = "is"; }
+String sub = "was";
+}
+String result = ""; Output :
+This is a test. This is, too.
+int i;
+Thwas is a test. This is, too.
+do { // replace all matching
+Thwas was a test. This is, too.
+substrings
+Thwas was a test. Thwas is, too.
+System.out.println(org);
+Thwas was a test. Thwas was, too.
+i = org.indexOf(search);
+if(i != -1) {
+result = org.substring(0, i);
+result = result + sub;
+20
+[PAGE 21]
+Changing the Case of Characters Within a String
+String toLowerCase( )
+String toUpperCase( )
+Example:
+String s = "This is a test.";
+String upper = s.toUpperCase(); THIS IS A TEST.
+String lower = s.toLowerCase(); this is a test.
+21
+[PAGE 22]
+Mind Map
+22
+[PAGE 23]
+Array
+Array is a collection of similar type of elements which has contiguous
+memory location.
+Java array is an object which contains elements of a similar data type.
+Additionally, The elements of an array are stored in a contiguous
+memory location.
+It is a data structure where we store similar elements. We can store only
+a fixed set of elements in a Java array.
+Array in Java is index-based, the first element of the array is stored at
+the 0th index, 2nd element is stored on 1st index and so on.
+Unlike C/C++, we can get the length of the array using the length
+member. In C/C++, we need to use the sizeof operator.
+23
+[PAGE 24]
+Array
+Serializable as well as Cloneable interfaces. We can store primitive
+values or objects in an array in Java.
+Like C/C++, we can also create single dimentional or
+multidimentional arrays in Java.
+Moreover, Java provides the feature of anonymous arrays which is
+not available in C/C++.
+24
+[PAGE 25]
+Array
+Advantages
+Code Optimization: It makes the code optimized, we can
+retrieve or sort the data efficiently.
+Random access: We can get any data located at an index
+position.
+Disadvantages
+Size Limit: We can store only the fixed size of elements in the
+array.
+It doesn't grow its size at runtime. To solve this problem,
+collection framework is used in Java which grows automatically.
+25
+[PAGE 26]
+Array
+Types of Array in java
+There are two types of array.
+1. Single Dimensional Array
+2. Multidimensional Array
+Single Dimensional Array in Java
+Syntax to Declare an Array in Java
+dataType[] arr; (or)
+dataType []arr; (or)
+dataType arr[];
+Instantiation of an Array in Java
+arrayRefVar=new datatype[size];
+26
+[PAGE 27]
+Array
+Example of Java Array
+Let's see the simple example of java array, where we are going to declare,
+instantiate, initialize and traverse an array.
+//Java Program to illustrate how to declare, instantiate, initialize and travers
+e the Java array.
+class Testarray{
+public static void main(String args[]){
+Output:
+int a[]=new int[5];//declaration and instantiation
+10
+a[0]=10; //initialization
+20
+a[1]=20;
+70
+a[2]=70;
+40
+a[3]=40;
+50
+a[4]=50;
+//traversing array
+for(int i=0;i<a.length;i++) //length is the property of array
+System.out.println(a[i]);
+}}
+27
+[PAGE 28]
+Array
+Declaration, Instantiation and Initialization of Java Array
+We can declare, instantiate and initialize the java array together by:
+int a[]={33,3,4,5};//declaration, instantiation and initialization
+Let's see the simple example to print this array.
+//Java Program to illustrate the use of declaration, instantiation and initializatio
+n of Java array in a single line
+class Testarray1{
+Output:
+public static void main(String args[]){
+33
+int a[]={33,3,4,5};//declaration, instantiation and initialization
+3
+//printing array
+4
+for(int i=0;i<a.length;i++)//length is the property of array
+5
+System.out.println(a[i]);
+}}
+28
+[PAGE 29]
+Array
+Multidimensional Array in Java
+In such case, data is stored in row and column based index (also known as
+matrix form).
+Syntax to Declare Multidimensional Array in Java
+dataType[][] arrayRefVar; (or)
+dataType [][]arrayRefVar; (or)
+dataType arrayRefVar[][]; (or)
+dataType []arrayRefVar[];
+Example to instantiate Multidimensional Array in Java
+int[][] arr=new int[3][3]; //3 row and 3 column
+29
+[PAGE 30]
+Array
+Example to initialize Multidimensional
+Array in Java
+arr[0][0]=1;
+arr[0][1]=2;
+arr[0][2]=3;
+arr[1][0]=4;
+arr[1][1]=5;
+arr[1][2]=6;
+arr[2][0]=7;
+arr[2][1]=8;
+arr[2][2]=9;
+30
+[PAGE 31]
+Array
+Example of Multidimensional Java Array
+Let's see the simple example to declare, instantiate, initialize and print the
+2Dimensional array.
+//Java Program to illustrate the use of multidimensional array
+class Testarray3{
+public static void main(String args[]){
+//declaring and initializing 2D array
+int arr[][]={{1,2,3},{2,4,5},{4,4,5}};
+//printing 2D array
+for(int i=0;i<3;i++){
+Output:
+for(int j=0;j<3;j++){
+1 2 3
+System.out.print(arr[i][j]+" ");
+2 4 5
+}
+System.out.println(); 4 4 5
+}
+}}
+31
+[PAGE 32]
+Array
+0 1 2 3 4 5 6 7 8
+Jagged Array in Java
+If we are creating odd number of columns in a 2D array, it is known as a
+jagged array. In other words, it is an array of arrays with different number of
+columns.
+//Java Program to illustrate the jagged array Output:
+class TestJaggedArray{ 0 1 2
+public static void main(String[] args){
+3 4 5 6
+//declaring a 2D array with odd columns
+7 8
+int arr[][] = new int[3][];
+arr[0] = new int[3]; //printing the data of a jagged array
+arr[1] = new int[4]; for (int i=0; i<arr.length; i++){
+for (int j=0; j<arr[i].length; j++){
+arr[2] = new int[2];
+System.out.print(arr[i][j]+" ");
+//initializing a jagged array
+}
+int count = 0;
+System.out.println();//new line
+for (int i=0; i<arr.length; i++)
+}
+for(int j=0; j<arr[i].length; j++) }
+arr[i][j] = count++; }
+32
+[PAGE 33]
+Array
+0 1 2 3 4 5 6 7 8
+Addition of 2 Matrices in Java
+//Java Program to demonstrate the addition of two matrices in Java
+class Testarray5{
+public static void main(String args[]){
+//creating two matrices
+int a[][]={{1,3,4},{3,4,5}};
+int b[][]={{1,3,4},{3,4,5}};
+//creating another matrix to store the sum of two matrices
+int c[][]=new int[2][3];
+//adding and printing addition of 2 matrices
+for(int i=0;i<2;i++){
+Output:
+for(int j=0;j<3;j++){
+2 6 8
+c[i][j]=a[i][j]+b[i][j];
+6 8 10
+System.out.print(c[i][j]+" ");
+}
+System.out.println();//new line }
+}}
+33
+[PAGE 34]
+Array
+0 1 2 3 4 5 6 7 8
+Multiplication of 2 Matrices in Java
+In the case of matrix multiplication, a one-row element of the first matrix is
+multiplied by all the columns of the second matrix which can be understood
+by the image given below.
+34
+[PAGE 35]
+Array
+0 1 2 3 4 5 6 7 8
+//Java Program to multiply two matrices
+public class MatrixMultiplicationExample{
+public static void main(String args[]){
+//creating two matrices
+int a[][]={{1,1,1},{2,2,2},{3,3,3}};
+int b[][]={{1,1,1},{2,2,2},{3,3,3}};
+//creating another matrix to store the multiplication of two matrices
+int c[][]=new int[3][3]; //3 rows and 3 columns
+//multiplying and printing multiplication of 2 matrices
+for(int i=0;i<3;i++){
+for(int j=0;j<3;j++){
+Output:
+c[i][j]=0;
+6 6 6
+for(int k=0;k<3;k++)
+12 12 12
+{ c[i][j]+=a[i][k]*b[k][j];
+18 18 18
+}//end of k loop
+System.out.print(c[i][j]+" "); //printing matrix element
+}//end of j loop
+System.out.println();//new line
+} }}
+35
