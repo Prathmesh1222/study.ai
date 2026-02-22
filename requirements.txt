@@ -10,3 +10,6 @@ pdfplumber
 python-pptx
 pytesseract
 numpy
+fastapi
+uvicorn
+python-multipart

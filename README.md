@@ -1,37 +1,37 @@
 # ⚡ Study.AI — AI-Powered Study Assistant
 
-An intelligent RAG (Retrieval-Augmented Generation) study assistant built with **Streamlit** and **Google Gemini**. Upload your course materials and get AI-powered theory answers, mind maps, quizzes, and flashcards — all grounded in your actual syllabus.
+An intelligent RAG (Retrieval-Augmented Generation) study assistant with an **Apple-inspired UI** built with **HTML/CSS/JS** and a **FastAPI** backend. Upload your course materials and get AI-powered theory answers, mind maps, quizzes, and flashcards — all grounded in your actual syllabus.
 
 ## ✨ Features
 
-| Feature                 | Description                                                     |
-| ----------------------- | --------------------------------------------------------------- |
-| 📖 **Theory Answers**   | Get detailed, citation-backed answers from your course material |
-| 🗺️ **Mind Maps**        | Auto-generated visual mind maps using Graphviz                  |
-| 🧠 **Practice Quizzes** | AI-generated MCQs with explanations                             |
-| 🃏 **Flashcards**       | Spaced-repetition flashcards with mastery tracking              |
-| 🔊 **Text-to-Speech**   | Listen to answers with built-in TTS                             |
-| 📸 **Visual RAG**       | Upload diagrams for image-aware Q&A                             |
-| 🚀 **HyDE Search**      | Hypothetical Document Embeddings for better retrieval           |
-| 🥇 **Reranking**        | Cross-encoder reranking for high-accuracy results               |
+| Feature                      | Description                                                 |
+| ---------------------------- | ----------------------------------------------------------- |
+| 📖 **Theory Answers**        | Detailed, citation-backed answers from your course material |
+| 🗺️ **Interactive Mind Maps** | D3.js-powered visual mind maps                              |
+| 🧠 **Practice Quizzes**      | AI-generated MCQs with explanations                         |
+| 🃏 **Flashcards**            | 3D flip animation with spaced-repetition mastery tracking   |
+| 🔊 **Text-to-Speech**        | Listen to answers with built-in TTS                         |
+| 🚀 **HyDE Search**           | Hypothetical Document Embeddings for better retrieval       |
+| 🥇 **Reranking**             | Cross-encoder reranking for high-accuracy results           |
+| 📊 **Gap Analysis**          | Identify missing topics in your syllabus                    |
 
 ## 🏗️ Architecture
 
 ```
 study-ai/
-├── app.py                    # Main Streamlit application
+├── server.py                 # FastAPI backend (REST API)
+├── static/
+│   ├── index.html            # Single-page application
+│   ├── css/style.css         # Apple-inspired design system
+│   └── js/app.js             # Client-side logic
 ├── scripts/                  # Processing pipeline
 │   ├── pdf_loader.py         # Extract text from PDFs
 │   ├── ppt_loader.py         # Extract text from PPTs
-│   ├── image_ocr.py          # OCR for images
 │   ├── clean_text.py         # Clean extracted text
 │   ├── chunker.py            # Chunk text for embeddings
 │   ├── build_faiss_index.py  # Build FAISS vector index
-│   ├── retrieve.py           # Retrieval engine
-│   ├── qa_engine.py          # Q&A engine
-│   ├── qa_engine_llm.py      # LLM-based Q&A
 │   ├── quiz_engine.py        # Quiz generator
-│   └── visual_engine.py      # Visual/diagram engine
+│   └── visual_engine.py      # Mind map generator
 ├── data/
 │   ├── raw/                  # Place your PDFs/PPTs here
 │   ├── extracted_text/       # Auto-generated from raw
@@ -67,18 +67,6 @@ source venv/bin/activate        # Linux/Mac
 pip install -r requirements.txt
 ```
 
-> **Note:** You also need [Graphviz](https://graphviz.org/download/) installed on your system:
->
-> ```bash
-> # Ubuntu/Debian
-> sudo apt install graphviz
->
-> # Mac
-> brew install graphviz
->
-> # Windows - download from https://graphviz.org/download/
-> ```
-
 ### 4. Set Up API Key
 
 Create a `.env` file in the project root:
@@ -92,74 +80,40 @@ Get your free API key from [Google AI Studio](https://aistudio.google.com/apikey
 ### 5. Run the App
 
 ```bash
-streamlit run app.py
+python server.py
 ```
 
-The app will open at `http://localhost:8501` 🎉
+Open **http://localhost:8000** in your browser 🎉
 
 ## 📚 Data Setup
 
 ### Using Pre-built Index (Ready to Go!)
 
-The repository includes a **pre-built FAISS index** and processed chunks for Java programming topics. You can start using the app immediately after setup — no raw data needed!
+The repository includes a **pre-built FAISS index** and processed chunks for Java programming topics. You can start using the app immediately — no raw data needed!
 
 ### Adding Your Own Materials
 
-To add your own study materials:
-
-1. **Place files** in the `data/raw/` directory:
-
-   ```
-   data/raw/
-   ├── pdf/         # Put PDFs here (organized by unit/topic)
-   └── ppt/         # Put PPTs here
-   ```
-
-2. **Run the processing pipeline:**
-
+1. **Place files** in `data/raw/pdf/` or `data/raw/ppt/`
+2. **Run the pipeline:**
    ```bash
-   # Step 1: Extract text
    python scripts/pdf_loader.py
    python scripts/ppt_loader.py
-
-   # Step 2: Clean text
    python scripts/clean_text.py
-
-   # Step 3: Create chunks
    python scripts/chunker.py
-
-   # Step 4: Build FAISS index
    python scripts/build_faiss_index.py
    ```
-
-3. **Restart the app** and your new material is searchable!
-
-### Downloading Original Raw Data (Optional)
-
-If you want the original Java course PDFs/PPTs used to build this project:
-
-```bash
-python setup_data.py
-```
-
-> **Note:** This script downloads from cloud storage. See `setup_data.py` for details.
+3. **Restart the server** — your new material is searchable!
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** Streamlit
-- **LLM:** Google Gemini (gemini-flash-latest)
+- **Frontend:** HTML, CSS (Glassmorphism), JavaScript
+- **Backend:** FastAPI + Uvicorn
+- **LLM:** Google Gemini
 - **Embeddings:** sentence-transformers (all-MiniLM-L6-v2)
 - **Reranking:** CrossEncoder (ms-marco-MiniLM-L-6-v2)
 - **Vector DB:** FAISS
-- **Visualization:** Graphviz
+- **Visualization:** D3.js (Mind Maps)
 - **TTS:** gTTS
-
-## 🤝 Contributing
-
-1. Fork the repo
-2. Add your study materials to `data/raw/`
-3. Run the pipeline to generate index
-4. Submit a PR with your processed data
 
 ## 📄 License
 

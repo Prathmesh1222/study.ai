@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-powered study assistant with RAG — theory answers, mind maps, quizzes, and flashcards grounded in your course material.">
+    <title>Study.AI — AI Study Assistant</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body>
+
+    <!-- ========== NAVIGATION BAR ========== -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span class="icon">⚡</span>
+            <span>Study.AI</span>
+        </div>
+        <div class="navbar-actions">
+            <button class="btn-icon" onclick="toggleSettings()" title="Settings" id="settings-btn">
+                ⚙️
+            </button>
+        </div>
+    </nav>
+
+    <!-- ========== SETTINGS PANEL (Slide-in) ========== -->
+    <div class="settings-overlay" id="settings-overlay" onclick="closeSettings()"></div>
+    <aside class="settings-panel" id="settings-panel">
+        <h3>Settings</h3>
+
+        <div class="settings-group">
+            <label>Search Enhancement</label>
+            <div class="setting-toggle">
+                <input type="checkbox" id="hyde-toggle">
+                <span>🚀 HyDE (Enhanced Search)</span>
+            </div>
+            <div class="setting-toggle mt-1">
+                <input type="checkbox" id="rerank-toggle" checked>
+                <span>🥇 Reranking (High Accuracy)</span>
+            </div>
+        </div>
+
+        <div class="settings-group">
+            <label>Quick Actions</label>
+            <button class="btn btn-secondary mb-1" onclick="handleGapAnalysis()" style="width:100%">
+                📊 Progress Analysis
+            </button>
+            <button class="btn btn-secondary mb-1" onclick="handleReviewFlashcards()" style="width:100%">
+                🔄 Review Flashcards
+            </button>
+        </div>
+    </aside>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="main-container">
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>AI Study Assistant</h1>
+            <p>Theory · Mind Maps · Quizzes · Flashcards</p>
+        </section>
+
+        <!-- Query Input -->
+        <section class="query-section">
+            <div class="query-input-wrapper">
+                <textarea
+                    id="query-input"
+                    class="query-input"
+                    placeholder="What do you want to learn today?"
+                    rows="2"
+                ></textarea>
+                <button class="query-submit" id="submit-btn" title="Generate (⌘ + Enter)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Mode Selector -->
+        <section class="mode-selector">
+            <button class="mode-pill active" data-mode="theory">
+                <span class="emoji">📖</span> Theory
+            </button>
+            <button class="mode-pill" data-mode="mindmap">
+                <span class="emoji">🗺️</span> Mind Map
+            </button>
+            <button class="mode-pill" data-mode="quiz">
+                <span class="emoji">🧠</span> Quiz
+            </button>
+            <button class="mode-pill" data-mode="flashcards">
+                <span class="emoji">🃏</span> Flashcards
+            </button>
+        </section>
+
+        <!-- Settings Bar (inline toggles) -->
+        <section class="settings-bar">
+            <label class="setting-toggle">
+                <input type="checkbox" id="hyde-inline" onchange="document.getElementById('hyde-toggle').checked = this.checked; document.getElementById('hyde-toggle').dispatchEvent(new Event('change'))">
+                <span>HyDE Search</span>
+            </label>
+            <label class="setting-toggle">
+                <input type="checkbox" id="rerank-inline" checked onchange="document.getElementById('rerank-toggle').checked = this.checked; document.getElementById('rerank-toggle').dispatchEvent(new Event('change'))">
+                <span>Reranking</span>
+            </label>
+        </section>
+
+        <!-- Results Area -->
+        <section class="results-area" id="results-area">
+            <!-- Dynamic content rendered by JS -->
+        </section>
+
+    </main>
+
+    <!-- ========== LOADING OVERLAY ========== -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text" id="loading-text">Thinking...</div>
+    </div>
+
+    <!-- ========== TOAST CONTAINER ========== -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- ========== SCRIPTS ========== -->
+    <!-- Marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- D3.js for Mind Map visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <!-- App -->
+    <script src="/static/js/app.js"></script>
+
+</body>
+</html>
