@@ -67,7 +67,7 @@ print(f"🔑 Loaded {len(API_KEYS)} API key(s)")
 class LLMFallback:
     """Manages multiple Gemini API keys with automatic fallback."""
 
-    def __init__(self, api_keys, model_name="gemini-1.5-flash"):
+    def __init__(self, api_keys, model_name="gemini-1.5-flash-latest"):
         self.api_keys = api_keys
         self.model_name = model_name
         self.current_index = 0
