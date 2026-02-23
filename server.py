@@ -67,21 +67,11 @@ print(f"🔑 Loaded {len(API_KEYS)} API key(s)")
 class LLMFallback:
     """Manages multiple Gemini API keys with automatic fallback."""
 
-    def __init__(self, api_keys, model_name="gemini-2.0-flash"):
+    def __init__(self, api_keys, model_name="gemini-1.5-flash"):
         self.api_keys = api_keys
         self.model_name = model_name
         self.current_index = 0
-        self.models = []
-
-        # Pre-configure all models
-        for key in api_keys:
-            genai.configure(api_key=key)
-            model = genai.GenerativeModel(model_name)
-            self.models.append({"key": key, "model": model})
-
-        # Set initial active key
-        genai.configure(api_key=api_keys[0])
-        print(f"✅ Primary API key configured (Key 1 of {len(api_keys)})")
+        print(f"✅ LLM Fallback initialized with {len(api_keys)} keys (using {model_name})")
 
     def _get_key_label(self, idx):
         return f"Key {idx + 1}/{len(self.api_keys)}"
@@ -92,12 +82,14 @@ class LLMFallback:
 
         for attempt in range(len(self.api_keys)):
             idx = (self.current_index + attempt) % len(self.api_keys)
-            model_info = self.models[idx]
+            key = self.api_keys[idx]
 
             try:
-                # Switch active API key
-                genai.configure(api_key=model_info["key"])
-                result = model_info["model"].generate_content(prompt, **kwargs)
+                # Configure and create model dynamically to ensure the key is applied
+                genai.configure(api_key=key)
+                model = genai.GenerativeModel(self.model_name)
+                
+                result = model.generate_content(prompt, **kwargs)
 
                 # Success — remember which key worked
                 if idx != self.current_index:
@@ -109,21 +101,26 @@ class LLMFallback:
             except Exception as e:
                 error_msg = str(e)
                 last_error = e
-                is_quota = "429" in error_msg or "quota" in error_msg.lower() or "resource" in error_msg.lower()
-                is_server = "500" in error_msg or "503" in error_msg
+                # Check for quota or transient server errors
+                is_quota = any(x in error_msg for x in ["429", "quota", "Resource has been exhausted"])
+                is_server = any(x in error_msg for x in ["500", "503", "504", "internal server error"])
 
                 if is_quota or is_server:
-                    print(f"⚠️  {self._get_key_label(idx)} failed: {error_msg[:80]}")
+                    status = "QUOTA" if is_quota else "SERVER ERR"
+                    print(f"⚠️  {self._get_key_label(idx)} {status}: {error_msg[:100]}...")
                     if attempt < len(self.api_keys) - 1:
-                        next_idx = (idx + 1) % len(self.api_keys)
-                        print(f"🔄 Trying {self._get_key_label(next_idx)}...")
-                    continue
+                        continue
+                    else:
+                        break # All keys exhausted
                 else:
-                    # Non-quota error — don't fallback, raise immediately
+                    # Non-quota error (safety, invalid prompt, etc.) — raise immediately
+                    print(f"❌ Non-recoverable error on {self._get_key_label(idx)}: {error_msg}")
                     raise
 
         # All keys exhausted
-        raise Exception(f"All {len(self.api_keys)} API keys failed. Last error: {last_error}")
+        msg = f"All {len(self.api_keys)} API keys failed. Last error: {last_error}"
+        print(f"🛑 {msg}")
+        raise Exception(msg)
 
 
 # Initialize fallback LLM
@@ -305,8 +302,11 @@ async def api_mindmap(req: MindMapRequest):
         req.query, use_hyde=req.use_hyde, use_rerank=req.use_rerank
     )
 
-    data = visual_engine.generate_mind_map(req.query, ctx)
-    return {"mindmap": data, "sources": smap}
+    try:
+        data = visual_engine.generate_mind_map(req.query, ctx)
+        return {"mindmap": data, "sources": smap}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/api/quiz")
@@ -316,8 +316,13 @@ async def api_quiz(req: QuizRequest):
         req.query, use_hyde=req.use_hyde, use_rerank=req.use_rerank
     )
 
-    quiz_data = quiz_engine.generate_quiz(req.query, ctx, req.num_questions)
-    return {"questions": quiz_data, "sources": smap}
+    try:
+        quiz_data = quiz_engine.generate_quiz(req.query, ctx, req.num_questions)
+        if not quiz_data:
+            raise Exception("Quiz generation returned empty result.")
+        return {"questions": quiz_data, "sources": smap}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/api/flashcards/generate")
