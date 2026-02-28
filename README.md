@@ -7,13 +7,16 @@ An intelligent RAG (Retrieval-Augmented Generation) study assistant with an **Ap
 | Feature                      | Description                                                 |
 | ---------------------------- | ----------------------------------------------------------- |
 | 📖 **Theory Answers**        | Detailed, citation-backed answers from your course material |
-| 🗺️ **Interactive Mind Maps** | D3.js-powered visual mind maps                              |
+| 🧸 **ELI5 Mode**             | Turn complex academic topics into simple, fun analogies     |
+| 🗺️ **Interactive Mind Maps** | D3.js visual mind maps with zoom and PNG export             |
 | 🧠 **Practice Quizzes**      | AI-generated MCQs with explanations                         |
-| 🃏 **Flashcards**            | 3D flip animation with spaced-repetition mastery tracking   |
+| 🃏 **Flashcards (SRS)**      | 3D flip animation with SuperMemo-2 mastery tracking         |
 | 🔊 **Text-to-Speech**        | Listen to answers with built-in TTS                         |
+| 🎤 **Voice Interaction**     | Ask questions naturally using your microphone               |
+| 📊 **Gap Analysis**          | Get a personalized learning roadmap based on search history |
+| 🌊 **Liquid Theme**          | Premium animated dark/light Apple-inspired design           |
 | 🚀 **HyDE Search**           | Hypothetical Document Embeddings for better retrieval       |
 | 🥇 **Reranking**             | Cross-encoder reranking for high-accuracy results           |
-| 📊 **Gap Analysis**          | Identify missing topics in your syllabus                    |
 
 ## 🏗️ Architecture
 
