@@ -1320,3 +1320,74 @@ body::before {
 .mindmap-container:active {
   cursor: grabbing;
 }
+
+/* --- Upload Overlay --- */
+.upload-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-normal) var(--ease-out);
+}
+
+.upload-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.upload-card {
+  width: 90%;
+  max-width: 500px;
+  padding: 32px;
+  text-align: center;
+  transform: translateY(20px) scale(0.95);
+  transition: transform var(--duration-normal) var(--ease-spring);
+}
+
+.upload-overlay.active .upload-card {
+  transform: translateY(0) scale(1);
+}
+
+.upload-card h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.upload-card p {
+  color: var(--text-secondary);
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+
+.file-input {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--bg-code);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color var(--duration-fast);
+}
+
+.file-input:hover {
+  border-color: var(--accent);
+}
+
+.upload-status {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  min-height: 20px;
+}

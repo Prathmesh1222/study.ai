@@ -60,6 +60,9 @@
             <button class="btn btn-secondary mb-1" onclick="handleReviewFlashcards()" style="width:100%">
                 🔄 Review Flashcards
             </button>
+            <button class="btn btn-secondary mb-1" onclick="showUploadOverlay()" style="width:100%">
+                📁 Upload Material
+            </button>
         </div>
     </aside>
 
@@ -135,6 +138,17 @@
     <div class="loading-overlay" id="loading-overlay">
         <div class="spinner"></div>
         <div class="loading-text" id="loading-text">Thinking...</div>
+    </div>
+
+    <!-- ========== UPLOAD OVERLAY ========== -->
+    <div class="upload-overlay" id="upload-overlay">
+        <div class="upload-card glass-card">
+            <h2>Welcome to Study.AI</h2>
+            <p>Upload your course PDFs or PPTs to build your personalized AI study assistant.</p>
+            <input type="file" id="document-upload" accept=".pdf,.ppt,.pptx" multiple class="file-input">
+            <button class="btn btn-primary" onclick="handleUpload()" id="upload-btn">Upload & Index files</button>
+            <div id="upload-status" class="upload-status mt-1"></div>
+        </div>
     </div>
 
     <!-- ========== TOAST CONTAINER ========== -->

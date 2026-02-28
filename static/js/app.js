@@ -28,6 +28,8 @@ const API = {
   flashcardsReview: "/api/flashcards/review",
   tts: "/api/tts",
   gap: "/api/gap-analysis",
+  status: "/api/status",
+  upload: "/api/upload",
 };
 
 // ==================================================
@@ -47,6 +49,10 @@ const els = {
   toastContainer: () => $("#toast-container"),
   hydeToggle: () => $("#hyde-toggle"),
   rerankToggle: () => $("#rerank-toggle"),
+  uploadOverlay: () => $("#upload-overlay"),
+  uploadStatus: () => $("#upload-status"),
+  fileInput: () => $("#document-upload"),
+  uploadBtn: () => $("#upload-btn"),
 };
 
 // ==================================================
@@ -943,11 +949,96 @@ function initTheme() {
 }
 
 // ==================================================
+// 17. UPLOAD & STATUS
+// ==================================================
+function showUploadOverlay() {
+  closeSettings();
+  els.uploadOverlay()?.classList.add("active");
+  els.uploadStatus().innerHTML = "Ready for your documents.";
+}
+
+function hideUploadOverlay() {
+  els.uploadOverlay()?.classList.remove("active");
+}
+
+async function handleUpload() {
+  const files = els.fileInput()?.files;
+  if (!files || files.length === 0) {
+    showToast("Please select at least one PDF file.", "error");
+    return;
+  }
+
+  const formData = new FormData();
+  for (let i = 0; i < files.length; i++) {
+    if (!files[i].name.toLowerCase().endsWith(".pdf")) {
+       showToast("Only PDF files are currently supported.", "error");
+       return;
+    }
+    formData.append("files", files[i]);
+  }
+
+  const btn = els.uploadBtn();
+  const statusLine = els.uploadStatus();
+  btn.disabled = true;
+  btn.innerHTML = "Processing (may take a minute)...";
+  statusLine.innerHTML = `Uploading ${files.length} file(s) and building AI index...`;
+
+  try {
+    const response = await fetch(API.upload, {
+      method: "POST",
+      body: formData,
+    });
+    const result = await response.json();
+
+    if (response.ok) {
+      showToast("Files processed successfully. Index built!", "success");
+      hideUploadOverlay();
+      
+      const area = els.resultsArea();
+      if (area) {
+        area.innerHTML = `
+            <div class="empty-state">
+                <div class="icon">✨</div>
+                <h3>Index Built! Ready to learn</h3>
+                <p>Enter a question or topic above and select a mode to get started.</p>
+            </div>
+        `;
+      }
+    } else {
+      showToast(result.detail || "Upload failed.", "error");
+      statusLine.innerHTML = `<span style="color:var(--error)">Failed: ${result.detail}</span>`;
+    }
+  } catch (error) {
+    console.error("Upload error:", error);
+    showToast("Network error during upload.", "error");
+    statusLine.innerHTML = `<span style="color:var(--error)">Network error. Is server running?</span>`;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = "Upload & Index files";
+    els.fileInput().value = "";
+  }
+}
+
+async function checkIndexStatus() {
+  try {
+    const res = await fetch(API.status);
+    const data = await res.json();
+    if (!data.has_index) {
+        showUploadOverlay();
+        els.uploadStatus().innerHTML = "No AI index found. Please upload a PDF to begin.";
+    }
+  } catch (e) {
+    console.error("Could not check index status", e);
+  }
+}
+
+// ==================================================
 // 18. INITIALIZATION
 // ==================================================
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   initModePills();
+  checkIndexStatus();
 
   // Submit on button click
   els.submitBtn()?.addEventListener("click", handleSubmit);

@@ -9,6 +9,8 @@ import os
 import base64
 import time
 import anyio
+import subprocess
+import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -154,14 +156,20 @@ cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
 index = None
 chunks = []
 
-if INDEX_PATH.exists() and META_PATH.exists():
-    print("📦 Loading FAISS index...")
-    index = faiss.read_index(str(INDEX_PATH))
-    with open(META_PATH, "r", encoding="utf-8") as f:
-        chunks = json.load(f)
-    print(f"✅ Loaded {len(chunks)} chunks")
-else:
-    print("⚠️  No FAISS index found. RAG features will be limited.")
+def load_index_data():
+    global index, chunks
+    if INDEX_PATH.exists() and META_PATH.exists():
+        print("📦 Loading FAISS index...")
+        index = faiss.read_index(str(INDEX_PATH))
+        with open(META_PATH, "r", encoding="utf-8") as f:
+            chunks = json.load(f)
+        print(f"✅ Loaded {len(chunks)} chunks")
+    else:
+        index = None
+        chunks = []
+        print("⚠️  No FAISS index found. RAG features will be limited.")
+
+load_index_data()
 
 # ==================================================
 # 3. FASTAPI APP
@@ -300,6 +308,58 @@ def save_flashcards(cards):
 # ==================================================
 # 6. API ENDPOINTS
 # ==================================================
+@app.get("/api/status")
+async def api_status():
+    """Check if the FAISS index is loaded."""
+    return {"has_index": index is not None and len(chunks) > 0}
+
+@app.post("/api/upload")
+async def api_upload(files: list[UploadFile] = File(...)):
+    """Upload documents and trigger processing pipeline."""
+    raw_pdf_dir = BASE_DIR / "data" / "raw" / "pdf"
+    raw_pdf_dir.mkdir(parents=True, exist_ok=True)
+    
+    saved_files = []
+    for file in files:
+        if file.filename.endswith(".pdf"):
+            save_path = raw_pdf_dir / file.filename
+            with open(save_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+            saved_files.append(file.filename)
+            
+    if not saved_files:
+        raise HTTPException(status_code=400, detail="No valid PDF files uploaded. Please upload PDFs.")
+        
+    try:
+        print("🚀 Starting data processing pipeline...")
+        env = os.environ.copy()
+        python_exec = "venv/bin/python" if os.path.exists("venv/bin/python") else "python3"
+        
+        scripts = [
+            "scripts/pdf_loader.py",
+            "scripts/clean_text.py",
+            "scripts/chunker.py",
+            "scripts/build_faiss_index.py"
+        ]
+        
+        for script in scripts:
+            print(f"Executing {script}...")
+            result = subprocess.run(
+                [python_exec, str(BASE_DIR / script)], 
+                capture_output=True, text=True, check=True, env=env
+            )
+            print(result.stdout)
+            
+        print("🔄 Reloading index into memory...")
+        load_index_data()
+        
+        return {"status": "success", "message": f"Successfully processed {len(saved_files)} files and built index."}
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Pipeline failed: {e.stderr}")
+        raise HTTPException(status_code=500, detail=f"Data processing failed: {e.stderr}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/")
 async def serve_index():
     """Serve the main HTML page."""
