@@ -10,7 +10,9 @@ class QuizEngine:
             match = re.search(r'(\[.*\])', text, re.DOTALL)
             if match: return json.loads(match.group(1))
             return json.loads(text)
-        except:
+        except Exception as e:
+            print(f"⚠️  Quiz JSON parse error: {e}")
+            print(f"   Raw response: {text[:200]}")
             return []
 
     def generate_quiz(self, topic, context, num_questions=5):
@@ -32,8 +34,8 @@ class QuizEngine:
             }}
         ]
         """
-        try:
-            response = self.llm.generate_content(prompt).text
-            return self._clean_json_response(response)
-        except:
-            return []
+        response = self.llm.generate_content(prompt).text
+        questions = self._clean_json_response(response)
+        if not questions:
+            raise Exception("AI failed to generate a valid quiz JSON.")
+        return questions

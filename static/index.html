@@ -26,6 +26,9 @@
             <span>Study.AI</span>
         </div>
         <div class="navbar-actions">
+            <button class="btn-icon" onclick="toggleTheme()" title="Toggle Theme" id="theme-btn">
+                🌓
+            </button>
             <button class="btn-icon" onclick="toggleSettings()" title="Settings" id="settings-btn">
                 ⚙️
             </button>
@@ -78,6 +81,9 @@
                     placeholder="What do you want to learn today?"
                     rows="2"
                 ></textarea>
+                <button class="mic-btn" id="mic-btn" title="Speak your query" onclick="startVoiceRecognition()">
+                    🎤
+                </button>
                 <button class="query-submit" id="submit-btn" title="Generate (⌘ + Enter)">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -100,6 +106,9 @@
             </button>
             <button class="mode-pill" data-mode="flashcards">
                 <span class="emoji">🃏</span> Flashcards
+            </button>
+            <button class="mode-pill" data-mode="gap">
+                <span class="emoji">📊</span> Gap Analysis
             </button>
         </section>
 
@@ -136,6 +145,8 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <!-- D3.js for Mind Map visualization -->
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <!-- html2canvas for exports -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <!-- App -->
     <script src="/static/js/app.js"></script>
 

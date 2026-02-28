@@ -15,10 +15,12 @@ const state = {
   flashcardIndex: 0,
   flashcardFlipped: false,
   settingsOpen: false,
+  history: JSON.parse(localStorage.getItem("study-history") || "[]"),
 };
 
 const API = {
   query: "/api/query",
+  eli5: "/api/eli5",
   mindmap: "/api/mindmap",
   quiz: "/api/quiz",
   flashcardsGenerate: "/api/flashcards/generate",
@@ -56,6 +58,16 @@ function initModePills() {
       $$(".mode-pill").forEach((p) => p.classList.remove("active"));
       pill.classList.add("active");
       state.mode = pill.dataset.mode;
+      
+      const input = els.queryInput();
+      if (input) {
+        if (state.mode === "gap") {
+          input.placeholder = "Press Enter to start Gap Analysis...";
+          input.value = "";
+        } else {
+          input.placeholder = "What do you want to learn today?";
+        }
+      }
     });
   });
 }
@@ -130,21 +142,76 @@ async function apiPost(url, data) {
 }
 
 // ==================================================
-// 8. SUBMIT HANDLER
+// 8. VOICE RECOGNITION
+// ==================================================
+function startVoiceRecognition() {
+  const btn = $("#mic-btn");
+  if (!("webkitSpeechRecognition" in window)) {
+    showToast("Speech recognition not supported in this browser.", "error");
+    return;
+  }
+
+  const recognition = new webkitSpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = "en-US";
+
+  recognition.onstart = function () {
+    btn.classList.add("recording");
+    els.queryInput().placeholder = "Listening...";
+  };
+
+  recognition.onresult = function (event) {
+    const transcript = event.results[0][0].transcript;
+    els.queryInput().value = transcript;
+    
+    // Auto-submit after voice input
+    setTimeout(() => {
+        handleSubmit();
+    }, 500);
+  };
+
+  recognition.onerror = function (event) {
+    console.error("Speech recognition error", event.error);
+    showToast("Could not recognize speech. Please try again.", "warning");
+    btn.classList.remove("recording");
+    els.queryInput().placeholder = "What do you want to learn today?";
+  };
+
+  recognition.onend = function () {
+    btn.classList.remove("recording");
+    els.queryInput().placeholder = "What do you want to learn today?";
+  };
+
+  recognition.start();
+}
+
+// ==================================================
+// 9. SUBMIT HANDLER
 // ==================================================
 async function handleSubmit() {
   const query = els.queryInput()?.value.trim();
-  if (!query) {
+  if (!query && state.mode !== "gap") {
     showToast("Please enter a question or topic", "error");
     return;
   }
   if (state.loading) return;
+
+  // Save to history if not in gap mode
+  if (query && state.mode !== "gap") {
+    if (!state.history.includes(query)) {
+      state.history.push(query);
+      if (state.history.length > 20) state.history.shift();
+      localStorage.setItem("study-history", JSON.stringify(state.history));
+    }
+  }
 
   const loadingMessages = {
     theory: "Generating answer...",
     mindmap: "Building mind map...",
     quiz: "Creating quiz...",
     flashcards: "Generating flashcards...",
+    gap: "Analyzing your learning trajectory...",
   };
 
   showLoading(loadingMessages[state.mode] || "Processing...");
@@ -176,6 +243,10 @@ async function handleSubmit() {
         state.flashcardIndex = 0;
         state.flashcardFlipped = false;
         renderFlashcards();
+        break;
+      case "gap":
+        result = await apiPost(API.gap, { history: state.history });
+        renderGapAnalysis(result);
         break;
     }
   } catch (e) {
@@ -211,6 +282,9 @@ function renderTheoryAnswer(data) {
                     <span>📖</span> Theory Answer
                 </div>
                 <div class="card-actions">
+                    <button class="btn-icon" onclick="handleELI5()" title="Explain Like I'm 5" id="eli5-btn">
+                        🧸
+                    </button>
                     <button class="btn-icon" onclick="handleTTS()" title="Listen">
                         🔊
                     </button>
@@ -247,10 +321,19 @@ function renderMindMap(data) {
   if (!area) return;
 
   area.innerHTML = `
-        <div class="result-card glass-card">
+        <div class="result-card glass-card animate-in">
             <div class="card-header">
                 <div class="card-title">
                     <span>🗺️</span> Mind Map
+                </div>
+                <div class="card-actions">
+                    <button class="btn-icon" onclick="resetMindMapZoom()" title="Reset Zoom">
+                        🔄
+                    </button>
+                    <button class="btn-icon" onclick="exportMindMap()" title="Export PNG">
+                        📥
+                    </button>
+                    <span class="text-xs text-tertiary">Drag to pan • Scroll to zoom</span>
                 </div>
             </div>
             <div class="mindmap-container" id="mindmap-svg"></div>
@@ -259,7 +342,7 @@ function renderMindMap(data) {
 
   const container = document.getElementById("mindmap-svg");
   const width = container.clientWidth;
-  const height = Math.max(420, Object.keys(data.branches || {}).length * 80);
+  const height = 500; // Fixed base height for better control
 
   // Convert flat mind map data to D3 tree structure
   const treeData = {
@@ -272,130 +355,125 @@ function renderMindMap(data) {
     })),
   };
 
-  // Create SVG
+  // Create SVG with Zoom support
   const svg = d3
     .select("#mindmap-svg")
     .append("svg")
     .attr("width", width)
     .attr("height", height)
-    .append("g")
-    .attr("transform", `translate(80, ${height / 2})`);
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .style("cursor", "move");
 
-  const treeLayout = d3.tree().size([height - 60, width - 220]);
+  const g = svg.append("g");
+
+  // Zoom logic
+  const zoom = d3.zoom()
+    .scaleExtent([0.3, 3])
+    .on("zoom", (event) => {
+      g.attr("transform", event.transform);
+    });
+
+  svg.call(zoom);
+  window.currentZoom = zoom;
+  window.currentSvg = svg;
+
+  const treeLayout = d3.tree().size([height - 100, width - 260]);
   const root = d3.hierarchy(treeData);
   treeLayout(root);
 
   // Apple color palette
-  const colors = [
-    "#0071e3",
-    "#34c759",
-    "#ff9f0a",
-    "#ff3b30",
-    "#af52de",
-    "#ff2d55",
-  ];
+  const colors = ["#0071e3", "#34c759", "#ff9f0a", "#ff3b30", "#af52de", "#ff2d55"];
 
-  // Draw links
-  svg
-    .selectAll(".link")
+  // 1. Draw links with "grow" animation
+  const link = g.selectAll(".link")
     .data(root.links())
     .enter()
     .append("path")
     .attr("class", "link")
-    .attr(
-      "d",
-      d3
-        .linkHorizontal()
-        .x((d) => d.y)
-        .y((d) => d.x),
-    )
     .attr("fill", "none")
     .attr("stroke", (d) => {
       const idx = root.children ? root.children.indexOf(d.source) : 0;
       return idx >= 0 ? colors[idx % colors.length] : "#d1d1d6";
     })
     .attr("stroke-width", (d) => (d.source.depth === 0 ? 2.5 : 1.5))
-    .attr("stroke-opacity", 0.6);
+    .attr("stroke-opacity", 0)
+    .attr("d", d3.linkHorizontal().x(d => root.y).y(d => root.x)); // Start at root
 
-  // Draw nodes
-  const nodes = svg
-    .selectAll(".node")
+  link.transition()
+    .duration(800)
+    .delay(200)
+    .attr("stroke-opacity", 0.6)
+    .attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x));
+
+  // 2. Nodes group
+  const node = g.selectAll(".node")
     .data(root.descendants())
     .enter()
     .append("g")
     .attr("class", "mindmap-node")
-    .attr("transform", (d) => `translate(${d.y}, ${d.x})`);
+    .attr("transform", d => `translate(${root.y}, ${root.x})`) // Start at root
+    .style("opacity", 0);
 
-  // Root node
-  nodes
-    .filter((d) => d.depth === 0)
+  node.transition()
+    .duration(800)
+    .delay((d, i) => 200 + d.depth * 150)
+    .attr("transform", d => `translate(${d.y}, ${d.x})`)
+    .style("opacity", 1);
+
+  // Root node style
+  node.filter((d) => d.depth === 0)
     .append("rect")
-    .attr("x", -60)
-    .attr("y", -18)
-    .attr("width", 120)
-    .attr("height", 36)
-    .attr("rx", 10)
-    .attr("fill", "#1d1d1f")
-    .attr("stroke", "none");
+    .attr("x", -60).attr("y", -18).attr("width", 120).attr("height", 36).attr("rx", 10)
+    .attr("fill", "#1d1d1f");
 
-  nodes
-    .filter((d) => d.depth === 0)
+  node.filter((d) => d.depth === 0)
     .append("text")
-    .attr("text-anchor", "middle")
-    .attr("dy", 5)
-    .attr("fill", "#ffffff")
-    .attr("font-size", "13px")
-    .attr("font-weight", "600")
-    .attr("font-family", "Inter, -apple-system, sans-serif")
-    .text((d) => truncate(d.data.name, 16));
+    .attr("text-anchor", "middle").attr("dy", 5).attr("fill", "#ffffff")
+    .attr("font-size", "13px").attr("font-weight", "600")
+    .text(d => truncate(d.data.name, 16));
 
   // Branch nodes
-  nodes
-    .filter((d) => d.depth === 1)
+  node.filter((d) => d.depth === 1)
     .append("rect")
-    .attr("x", -50)
-    .attr("y", -16)
-    .attr("width", 100)
-    .attr("height", 32)
-    .attr("rx", 8)
-    .attr("fill", (d, i) => colors[i % colors.length])
-    .attr("fill-opacity", 0.12)
-    .attr("stroke", (d, i) => colors[i % colors.length])
-    .attr("stroke-width", 1.5);
+    .attr("x", -50).attr("y", -16).attr("width", 100).attr("height", 32).attr("rx", 8)
+    .attr("fill", (d, i) => colors[i % colors.length]).attr("fill-opacity", 0.1)
+    .attr("stroke", (d, i) => colors[i % colors.length]).attr("stroke-width", 1.5);
 
-  nodes
-    .filter((d) => d.depth === 1)
+  node.filter((d) => d.depth === 1)
     .append("text")
-    .attr("text-anchor", "middle")
-    .attr("dy", 5)
-    .attr("fill", "#1d1d1f")
-    .attr("font-size", "12px")
-    .attr("font-weight", "500")
-    .attr("font-family", "Inter, -apple-system, sans-serif")
-    .text((d) => truncate(d.data.name, 14));
+    .attr("text-anchor", "middle").attr("dy", 5).attr("class", "mindmap-text-primary")
+    .attr("font-size", "12px").attr("font-weight", "500")
+    .text(d => truncate(d.data.name, 14));
 
   // Leaf nodes
-  nodes
-    .filter((d) => d.depth > 1)
+  node.filter((d) => d.depth > 1)
     .append("circle")
     .attr("r", 4)
     .attr("fill", (d) => {
       const parentIdx = root.children ? root.children.indexOf(d.parent) : 0;
-      return parentIdx >= 0 ? colors[parentIdx % colors.length] : "#86868b";
-    })
-    .attr("fill-opacity", 0.5);
+      return colors[parentIdx % colors.length] || "#86868b";
+    });
 
-  nodes
-    .filter((d) => d.depth > 1)
+  node.filter((d) => d.depth > 1)
     .append("text")
-    .attr("x", 10)
-    .attr("dy", 4)
-    .attr("fill", "#6e6e73")
-    .attr("font-size", "11px")
-    .attr("font-family", "Inter, -apple-system, sans-serif")
-    .text((d) => truncate(d.data.name, 20));
+    .attr("x", 10).attr("dy", 4).attr("class", "mindmap-text-secondary").attr("font-size", "11px")
+    .text(d => truncate(d.data.name, 20));
+
+  // Center the view on load
+  const initialTransform = d3.zoomIdentity.translate(width / 4, height / 2).scale(0.9);
+  svg.call(zoom.transform, initialTransform);
 
   area.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function resetMindMapZoom() {
+  if (window.currentZoom && window.currentSvg) {
+    const container = document.getElementById("mindmap-svg");
+    const width = container.clientWidth;
+    const height = 500;
+    const initialTransform = d3.zoomIdentity.translate(width / 4, height / 2).scale(0.9);
+    window.currentSvg.transition().duration(750).call(window.currentZoom.transform, initialTransform);
+  }
 }
 
 // ==================================================
@@ -560,6 +638,10 @@ function nextFlashcard() {
     state.flashcardIndex++;
     state.flashcardFlipped = false;
     renderFlashcards();
+  } else {
+    // Finished reviewing
+    state.flashcards = [];
+    renderFlashcards();
   }
 }
 
@@ -633,34 +715,136 @@ function downloadNote() {
   showToast("Note downloaded!", "success");
 }
 
-// ==================================================
-// 14. GAP ANALYSIS
-// ==================================================
-async function handleGapAnalysis() {
-  showLoading("Analyzing coverage...");
-  closeSettings();
-  try {
-    const result = await apiPost(API.gap, {});
-    const area = els.resultsArea();
-    if (area) {
-      area.innerHTML = `
-                <div class="result-card glass-card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span>📊</span> Progress Analysis
-                        </div>
-                    </div>
-                    <div class="theory-content">
-                        ${renderMarkdown(result.analysis)}
-                    </div>
-                </div>
-            `;
+async function exportMindMap() {
+  const container = $("#mindmap-svg");
+  if (!container || typeof html2canvas === "undefined") {
+    showToast("Export failed: Dependencies missing.", "error");
+    return;
+  }
+
+  showLoading("Exporting mind map...");
+  
+  // Temporarily reset zoom for a clean export
+  resetMindMapZoom();
+  
+  // Wait a moment for zoom transition to finish
+  setTimeout(async () => {
+    try {
+      const canvas = await html2canvas(container, {
+        backgroundColor: document.documentElement.getAttribute("data-theme") === 'dark' ? '#1c1c1e' : '#ffffff',
+        scale: 2 // Higher resolution
+      });
+      
+      const link = document.createElement("a");
+      link.download = `mindmap_${Date.now()}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+      
+      showToast("Mind map exported!", "success");
+    } catch (e) {
+      console.error(e);
+      showToast("Export failed.", "error");
+    } finally {
+      hideLoading();
     }
+  }, 800);
+}
+
+let originalTheoryHtml = "";
+let isEli5Active = false;
+
+async function handleELI5() {
+  const content = $("#theory-content");
+  const query = els.queryInput()?.value.trim();
+  
+  if (!content || !query) return;
+
+  if (isEli5Active) {
+    // Switch back to original theory
+    content.style.opacity = 0;
+    setTimeout(() => {
+      content.innerHTML = originalTheoryHtml;
+      content.style.opacity = 1;
+      $("#eli5-btn").classList.remove("active");
+      isEli5Active = false;
+      showToast("Switched to Standard Theory", "info");
+    }, 300);
+    return;
+  }
+
+  // Generate ELI5
+  showLoading("Simplifying the concept...");
+  try {
+    const result = await apiPost(API.eli5, {
+        query: query,
+        use_hyde: state.useHyde,
+        use_rerank: state.useRerank,
+    });
+    
+    // Save original if not saved yet
+    if (!originalTheoryHtml) {
+        originalTheoryHtml = content.innerHTML;
+    }
+
+    content.style.opacity = 0;
+    setTimeout(() => {
+        content.innerHTML = `
+            <div class="eli5-banner" style="background: var(--accent-light); padding: 12px; border-radius: 8px; margin-bottom: 20px; font-weight: 500;">
+                🧸 Explain Like I'm 5 Mode Active
+            </div>
+            ${renderMarkdown(result.answer)}
+        `;
+        content.style.opacity = 1;
+        content.style.transition = "opacity 0.3s ease";
+        $("#eli5-btn").classList.add("active");
+        isEli5Active = true;
+    }, 300);
+    
+    showToast("Switched to ELI5 Mode", "success");
   } catch (e) {
     console.error(e);
   } finally {
     hideLoading();
   }
+}
+
+// ==================================================
+// 14. GAP ANALYSIS
+// ==================================================
+async function handleGapAnalysis() {
+  closeSettings();
+  
+  // Switch to gap mode
+  state.mode = "gap";
+  $$(".mode-pill").forEach((p) => p.classList.remove("active"));
+  const gapPill = $('[data-mode="gap"]');
+  if (gapPill) gapPill.classList.add("active");
+  
+  els.queryInput().value = "";
+  els.queryInput().placeholder = "Press Enter to start Gap Analysis...";
+  
+// Trigger analysis
+  handleSubmit();
+}
+
+function renderGapAnalysis(data) {
+  const area = els.resultsArea();
+  if (!area) return;
+
+  area.innerHTML = `
+        <div class="result-card glass-card animate-in">
+            <div class="card-header">
+                <div class="card-title">
+                    <span>📊</span> Gap Analysis & Roadmap
+                </div>
+            </div>
+            <div class="theory-content">
+                ${renderMarkdown(data.analysis)}
+            </div>
+        </div>
+    `;
+
+  area.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 // ==================================================
@@ -672,19 +856,23 @@ async function handleReviewFlashcards() {
   try {
     const res = await fetch(API.flashcardsGet);
     const data = await res.json();
-    state.flashcards = data.flashcards || [];
+    
+    // Filter for due cards
+    const now = new Date().toISOString();
+    state.flashcards = (data.flashcards || []).filter(c => !c.next_review || c.next_review <= now);
     state.flashcardIndex = 0;
     state.flashcardFlipped = false;
 
+    // Update mode pills
+    $$(".mode-pill").forEach((p) => p.classList.remove("active"));
+    const fcPill = $('[data-mode="flashcards"]');
+    if (fcPill) fcPill.classList.add("active");
+    state.mode = "flashcards";
+
     if (state.flashcards.length === 0) {
       els.resultsArea().innerHTML =
-        '<div class="empty-state"><div class="icon">🎉</div><h3>All caught up!</h3><p>No flashcards saved yet. Generate some first!</p></div>';
+        '<div class="empty-state"><div class="icon">🎉</div><h3>All caught up!</h3><p>You have no flashcards due for review right now.</p></div>';
     } else {
-      // Update mode pills
-      $$(".mode-pill").forEach((p) => p.classList.remove("active"));
-      const fcPill = $('[data-mode="flashcards"]');
-      if (fcPill) fcPill.classList.add("active");
-      state.mode = "flashcards";
       renderFlashcards();
     }
   } catch (e) {
@@ -735,9 +923,30 @@ function truncate(str, max) {
 }
 
 // ==================================================
-// 17. INITIALIZATION
+// 17. THEME TOGGLE
+// ==================================================
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute("data-theme");
+  const newTheme = currentTheme === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", newTheme);
+  localStorage.setItem("study-ai-theme", newTheme);
+  showToast(`Switched to ${newTheme} mode`, "info");
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem("study-ai-theme");
+  if (savedTheme) {
+    document.documentElement.setAttribute("data-theme", savedTheme);
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.setAttribute("data-theme", "dark");
+  }
+}
+
+// ==================================================
+// 18. INITIALIZATION
 // ==================================================
 document.addEventListener("DOMContentLoaded", () => {
+  initTheme();
   initModePills();
 
   // Submit on button click

@@ -66,6 +66,42 @@
   --blur-heavy: blur(40px);
 }
 
+/* --- Dark Theme Overrides --- */
+[data-theme="dark"] {
+  /* Backgrounds */
+  --bg-primary: #000000;
+  --bg-secondary: #1c1c1e;
+  --bg-glass: rgba(28, 28, 30, 0.72);
+  --bg-glass-strong: rgba(28, 28, 30, 0.85);
+  --bg-glass-subtle: rgba(28, 28, 30, 0.55);
+  --bg-code: #2c2c2e;
+
+  /* Text */
+  --text-primary: #f5f5f7;
+  --text-secondary: #a1a1a6;
+  --text-tertiary: #6e6e73;
+  --text-inverse: #000000;
+
+  /* Accent (slightly brighter for contrast) */
+  --accent: #0a84ff;
+  --accent-hover: #409cff;
+  --accent-light: rgba(10, 132, 255, 0.15);
+  --accent-glow: rgba(10, 132, 255, 0.25);
+
+  /* Status */
+  --success: #32d74b;
+  --warning: #ff9f0a;
+  --error: #ff453a;
+
+  /* Borders & Shadows */
+  --border: rgba(255, 255, 255, 0.15);
+  --border-strong: rgba(255, 255, 255, 0.25);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.7);
+}
+
 /* --- Reset & Base --- */
 *,
 *::before,
@@ -91,40 +127,45 @@ body {
   overflow-x: hidden;
 }
 
-/* --- Background Gradient Blob (Apple-style ambient) --- */
+/* --- Liquid Animated Background --- */
 body::before {
   content: "";
   position: fixed;
-  top: -30%;
-  right: -20%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(
-    circle,
-    rgba(0, 113, 227, 0.06) 0%,
-    transparent 70%
-  );
-  border-radius: 50%;
+  top: -50%;
+  left: -50%;
+  width: 200vw;
+  height: 200vh;
+  background: radial-gradient(circle at 50% 50%, var(--accent-light) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(52, 199, 89, 0.08) 0%, transparent 40%),
+              radial-gradient(circle at 20% 80%, rgba(255, 59, 48, 0.08) 0%, transparent 40%);
+  animation: liquid-flow 25s ease-in-out infinite alternate;
   pointer-events: none;
   z-index: 0;
 }
 
-body::after {
-  content: "";
-  position: fixed;
-  bottom: -20%;
-  left: -15%;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(
-    circle,
-    rgba(52, 199, 89, 0.05) 0%,
-    transparent 70%
-  );
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
+[data-theme="dark"] body::before {
+  background: radial-gradient(circle at 50% 50%, var(--accent-glow) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(50, 215, 75, 0.1) 0%, transparent 40%),
+              radial-gradient(circle at 20% 80%, rgba(255, 69, 58, 0.1) 0%, transparent 40%);
 }
+
+@keyframes liquid-flow {
+  0% { transform: rotate(0deg) scale(1) translate(0, 0); }
+  25% { transform: rotate(5deg) scale(1.1) translate(2%, 2%); }
+  50% { transform: rotate(-5deg) scale(0.9) translate(-2%, 4%); }
+  75% { transform: rotate(2deg) scale(1.05) translate(-4%, -2%); }
+  100% { transform: rotate(0deg) scale(1) translate(0, 0); }
+}
+
+/* --- Mind Map SVG Text Fixes --- */
+.mindmap-text-primary {
+  fill: var(--text-primary);
+}
+
+.mindmap-text-secondary {
+  fill: var(--text-secondary);
+}
+
 
 /* --- Navigation Bar --- */
 .navbar {
@@ -285,6 +326,40 @@ body::after {
 .query-submit svg {
   width: 18px;
   height: 18px;
+}
+
+.mic-btn {
+  position: absolute;
+  right: 60px;
+  bottom: 14px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.mic-btn:hover {
+  background: var(--bg-glass-strong);
+  color: var(--text-primary);
+}
+
+.mic-btn.recording {
+  color: var(--error);
+  animation: pulse-mic 1.5s infinite;
+}
+
+@keyframes pulse-mic {
+  0% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 59, 48, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); }
 }
 
 /* --- Mode Selector (Pill Buttons) --- */

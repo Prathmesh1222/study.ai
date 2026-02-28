@@ -209,7 +209,15 @@ class TTSRequest(BaseModel):
 
 class FlashcardReview(BaseModel):
     question: str
-    difficulty: str  # Easy, Medium, Hard
+    difficulty: str
+
+class ELI5Request(BaseModel):
+    query: str
+    use_hyde: bool = False
+    use_rerank: bool = True
+
+class GapAnalysisRequest(BaseModel):
+    history: list[str]
 
 # ==================================================
 # 5. CORE RAG FUNCTIONS
@@ -326,6 +334,26 @@ async def api_query(req: QueryRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/api/eli5")
+async def api_eli5(req: ELI5Request):
+    """Generate an 'Explain Like I'm 5' simplified analogy."""
+    ctx, smap, raw = await retrieve_context(
+        req.query, use_hyde=req.use_hyde, use_rerank=req.use_rerank, top_k=2
+    )
+
+    prompt = f"""
+    Context: {ctx}
+    Topic: {req.query}
+    
+    Task: Explain this topic to a 5-year-old child using a fun, simple, and relatable everyday analogy. 
+    Do not use any technical jargon. Keep it to one or two short paragraphs.
+    """
+    try:
+        response = await llm.generate_content_async(prompt)
+        return {"answer": response.text}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/mindmap")
 async def api_mindmap(req: MindMapRequest):
     """Generate a mind map JSON structure."""
@@ -377,9 +405,11 @@ async def api_flashcards_gen(req: FlashcardRequest):
         print(f"⏱️  AI Generation (Flashcards) took: {time.time() - t_ai:.2f}s")
         cards = clean_json_response(res.text) or []
         
-        # Add metadata
+        # Add SRS metadata
         for c in cards:
-            c["box"] = 0
+            c["repetition"] = 0
+            c["interval"] = 1
+            c["ease_factor"] = 2.5
             c["next_review"] = datetime.now().isoformat()
             
         return {"flashcards": cards, "sources": smap}
@@ -395,17 +425,46 @@ async def api_get_flashcards():
 
 @app.put("/api/flashcards/review")
 async def api_review_flashcard(review: FlashcardReview):
-    """Update flashcard mastery based on review difficulty."""
+    """Update flashcard mastery using SM-2 algorithm."""
     cards = load_flashcards()
     for card in cards:
         if card["front"] == review.question:
-            if review.difficulty == "Hard":
-                card["next_review"] = datetime.now().isoformat()
-            elif review.difficulty == "Medium":
-                card["next_review"] = (datetime.now() + timedelta(days=1)).isoformat()
-            elif review.difficulty == "Easy":
-                card["next_review"] = (datetime.now() + timedelta(days=3)).isoformat()
+            # SM-2 quality: 0-5 (0 = Hard, 3 = Medium, 5 = Easy)
+            q_map = {"Hard": 1, "Medium": 3, "Easy": 5}
+            q = q_map.get(review.difficulty, 3)
+
+            # Default attributes if it's an old card
+            rep = card.get("repetition", 0)
+            interval = card.get("interval", 1)
+            ef = card.get("ease_factor", 2.5)
+
+            if q < 3:
+                # Failed / Hard - Reset
+                rep = 0
+                interval = 1
+            else:
+                # Passed
+                if rep == 0:
+                    interval = 1
+                elif rep == 1:
+                    interval = 6
+                else:
+                    interval = round(interval * ef)
+                rep += 1
+
+            # Update ease factor
+            ef = ef + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02))
+            if ef < 1.3:
+                ef = 1.3
+
+            card["repetition"] = rep
+            card["interval"] = interval
+            card["ease_factor"] = ef
+            
+            # Add interval defined in days
+            card["next_review"] = (datetime.now() + timedelta(days=interval)).isoformat()
             break
+            
     save_flashcards(cards)
     return {"status": "ok"}
 
@@ -432,16 +491,30 @@ async def api_tts(req: TTSRequest):
 
 
 @app.post("/api/gap-analysis")
-async def api_gap_analysis():
-    """Run syllabus gap analysis."""
+async def api_gap_analysis(req: GapAnalysisRequest):
+    """Run syllabus gap analysis based on study history."""
     all_files = list(set([
         c.get("metadata", {}).get("source_file", "Unit")
         for c in chunks
     ]))
-    prompt = f"Syllabus Files: {all_files}\nIdentify missing topics and suggest a study roadmap."
+
+    history_text = "\n- ".join(req.history) if req.history else "None yet."
+
+    prompt = f"""
+    Syllabus Topics/Files available: {all_files}
+    
+    Student's recent study history:
+    - {history_text}
+    
+    Task: 
+    1. Identify what key topics from the syllabus the student HAS NOT studied yet (the 'Gaps').
+    2. Suggest a logical study roadmap for their next 3 sessions based on what they have already covered and what they are missing.
+    3. Format the response nicely using Markdown (bullet points, bold text). Keep it encouraging and structured.
+    """
+    
     try:
-        result = llm.generate_content(prompt).text
-        return {"analysis": result}
+        response = await llm.generate_content_async(prompt)
+        return {"analysis": response.text}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

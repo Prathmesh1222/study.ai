@@ -26,12 +26,10 @@ class VisualEngine:
         3. JUST show the hierarchy of concepts.
         4. Keep nodes SHORT (1-3 words).
         
-        Format: {{\"topic\": \"Main Topic\", \"branches\": {{\"Branch1\": [\"Leaf1\", \"Leaf2\"], \"Branch2\": [\"Leaf3\"]}}}}
+        Format: {{"topic": "Main Topic", "branches": {{"Branch1": ["Leaf1", "Leaf2"], "Branch2": ["Leaf3"]}}}}
         """
-        try:
-            res = self.llm.generate_content(prompt).text
-            data = self._clean_json_response(res)
-            if not data: return {"topic": "Error", "branches": {"Parse Error": ["Try again"]}}
-            return data
-        except Exception as e:
-            return {"topic": "Error", "branches": {f"Error": ["Check API Key"]}}
+        res = self.llm.generate_content(prompt).text
+        data = self._clean_json_response(res)
+        if not data: 
+            raise Exception("Failed to parse mind map JSON from AI response.")
+        return data
