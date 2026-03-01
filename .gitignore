@@ -3,8 +3,17 @@
 venv/
 __pycache__/
 
-# Raw data (PDFs/PPTs - too large for Git)
-data/raw/
+# Data (generated at runtime from uploads)
+data/raw/*
+data/extracted_text/
+data/cleaned_text/
+data/chunks/
+
+# Models (built from data at runtime)
+models/
+
+# Keep directory structure
+!data/raw/.gitkeep
 
 # Temp files
 temp_audio.mp3

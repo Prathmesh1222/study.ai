@@ -1,168 +1,160 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AI-powered study assistant with RAG — theory answers, mind maps, quizzes, and flashcards grounded in your course material.">
+    <meta name="description" content="AI-powered study assistant — theory answers, mind maps, quizzes, and flashcards grounded in your course material.">
     <title>Study.AI — AI Study Assistant</title>
-
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Stylesheets -->
     <link rel="stylesheet" href="/static/css/style.css">
-
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230a84ff'/><text x='50' y='70' font-size='56' text-anchor='middle' fill='white' font-weight='700' font-family='Inter'>S</text></svg>">
 </head>
 <body>
+    <div class="app-layout">
 
-    <!-- ========== NAVIGATION BAR ========== -->
-    <nav class="navbar">
-        <div class="navbar-brand">
-            <span class="icon">⚡</span>
-            <span>Study.AI</span>
-        </div>
-        <div class="navbar-actions">
-            <button class="btn-icon" onclick="toggleTheme()" title="Toggle Theme" id="theme-btn">
-                🌓
-            </button>
-            <button class="btn-icon" onclick="toggleSettings()" title="Settings" id="settings-btn">
-                ⚙️
-            </button>
-        </div>
-    </nav>
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar" id="chat-sidebar">
+            <div class="sidebar-top">
+                <button class="sidebar-new-btn" onclick="newChat()" title="New Chat">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    New Chat
+                </button>
+            </div>
+            <div class="sidebar-chats" id="sidebar-chats"></div>
+            <div class="sidebar-docs" id="doc-bar" style="display:none">
+                <div class="sidebar-docs-label">Sources</div>
+                <div class="sidebar-docs-list" id="doc-chips"></div>
+            </div>
+            <div class="sidebar-bottom">
+                <button class="sidebar-action" onclick="showUploadOverlay()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Upload Material
+                </button>
+                <button class="sidebar-action" onclick="toggleSettings()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Settings
+                </button>
+            </div>
+        </aside>
 
-    <!-- ========== SETTINGS PANEL (Slide-in) ========== -->
+        <!-- ===== MAIN CHAT AREA ===== -->
+        <div class="chat-area">
+            <!-- Top bar -->
+            <header class="chat-header">
+                <div class="chat-header-left">
+                    <button class="icon-btn" id="sidebar-toggle-btn" onclick="toggleSidebar()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                    <h1 class="chat-title" id="chat-title">Study.AI</h1>
+                </div>
+                <div class="chat-header-right">
+                    <!-- Mode selector lives in header -->
+                    <div class="mode-selector">
+                        <button class="mode-pill active" data-mode="theory">Theory</button>
+                        <button class="mode-pill" data-mode="mindmap">Mind Map</button>
+                        <button class="mode-pill" data-mode="quiz">Quiz</button>
+                        <button class="mode-pill" data-mode="flashcards">Flashcards</button>
+                    </div>
+                    <button class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="Theme">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Scrollable messages area -->
+            <div class="chat-messages" id="results-area">
+                <!-- Dynamic content -->
+            </div>
+
+
+            <!-- Bottom-anchored input -->
+            <div class="chat-input-area">
+                <div class="chat-input-wrapper">
+                    <textarea id="query-input" class="chat-input" placeholder="Ask anything about your material..." rows="1"></textarea>
+                    <button class="input-action-btn" id="mic-btn" onclick="startVoiceRecognition()" title="Voice input">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                    </button>
+                    <button class="send-btn" id="submit-btn" title="Send">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                    </button>
+                </div>
+                <p class="input-hint">Study.AI uses your uploaded material to generate responses</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SETTINGS PANEL ===== -->
     <div class="settings-overlay" id="settings-overlay" onclick="closeSettings()"></div>
     <aside class="settings-panel" id="settings-panel">
-        <h3>Settings</h3>
-
-        <div class="settings-group">
-            <label>Search Enhancement</label>
-            <div class="setting-toggle">
-                <input type="checkbox" id="hyde-toggle">
-                <span>🚀 HyDE (Enhanced Search)</span>
-            </div>
-            <div class="setting-toggle mt-1">
-                <input type="checkbox" id="rerank-toggle" checked>
-                <span>🥇 Reranking (High Accuracy)</span>
-            </div>
+        <div class="settings-header">
+            <h3>Settings</h3>
+            <button class="icon-btn" onclick="closeSettings()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
         </div>
-
         <div class="settings-group">
-            <label>Quick Actions</label>
-            <button class="btn btn-secondary mb-1" onclick="handleGapAnalysis()" style="width:100%">
-                📊 Progress Analysis
-            </button>
-            <button class="btn btn-secondary mb-1" onclick="handleReviewFlashcards()" style="width:100%">
-                🔄 Review Flashcards
-            </button>
-            <button class="btn btn-secondary mb-1" onclick="showUploadOverlay()" style="width:100%">
-                📁 Upload Material
-            </button>
+            <label class="settings-label">Search Enhancement</label>
+            <label class="toggle-row"><input type="checkbox" id="hyde-toggle"><span>HyDE (Enhanced Search)</span></label>
+            <label class="toggle-row"><input type="checkbox" id="rerank-toggle" checked><span>Reranking (High Accuracy)</span></label>
+        </div>
+        <div class="settings-group">
+            <label class="settings-label">Actions</label>
+            <button class="settings-action-btn" onclick="handleGapAnalysis()">Gap Analysis</button>
+            <button class="settings-action-btn" onclick="handleReviewFlashcards()">Review Flashcards</button>
+        </div>
+        <div class="settings-group">
+            <label class="settings-label">Document Sources</label>
+            <div id="sources-list" class="sources-list">
+                <span class="sources-empty">No documents loaded.</span>
+            </div>
         </div>
     </aside>
 
-    <!-- ========== MAIN CONTENT ========== -->
-    <main class="main-container">
-
-        <!-- Hero Section -->
-        <section class="hero">
-            <h1>AI Study Assistant</h1>
-            <p>Theory · Mind Maps · Quizzes · Flashcards</p>
-        </section>
-
-        <!-- Query Input -->
-        <section class="query-section">
-            <div class="query-input-wrapper">
-                <textarea
-                    id="query-input"
-                    class="query-input"
-                    placeholder="What do you want to learn today?"
-                    rows="2"
-                ></textarea>
-                <button class="mic-btn" id="mic-btn" title="Speak your query" onclick="startVoiceRecognition()">
-                    🎤
-                </button>
-                <button class="query-submit" id="submit-btn" title="Generate (⌘ + Enter)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
-                </button>
-            </div>
-        </section>
-
-        <!-- Mode Selector -->
-        <section class="mode-selector">
-            <button class="mode-pill active" data-mode="theory">
-                <span class="emoji">📖</span> Theory
-            </button>
-            <button class="mode-pill" data-mode="mindmap">
-                <span class="emoji">🗺️</span> Mind Map
-            </button>
-            <button class="mode-pill" data-mode="quiz">
-                <span class="emoji">🧠</span> Quiz
-            </button>
-            <button class="mode-pill" data-mode="flashcards">
-                <span class="emoji">🃏</span> Flashcards
-            </button>
-            <button class="mode-pill" data-mode="gap">
-                <span class="emoji">📊</span> Gap Analysis
-            </button>
-        </section>
-
-        <!-- Settings Bar (inline toggles) -->
-        <section class="settings-bar">
-            <label class="setting-toggle">
-                <input type="checkbox" id="hyde-inline" onchange="document.getElementById('hyde-toggle').checked = this.checked; document.getElementById('hyde-toggle').dispatchEvent(new Event('change'))">
-                <span>HyDE Search</span>
-            </label>
-            <label class="setting-toggle">
-                <input type="checkbox" id="rerank-inline" checked onchange="document.getElementById('rerank-toggle').checked = this.checked; document.getElementById('rerank-toggle').dispatchEvent(new Event('change'))">
-                <span>Reranking</span>
-            </label>
-        </section>
-
-        <!-- Results Area -->
-        <section class="results-area" id="results-area">
-            <!-- Dynamic content rendered by JS -->
-        </section>
-
-    </main>
-
-    <!-- ========== LOADING OVERLAY ========== -->
+    <!-- ===== LOADING ===== -->
     <div class="loading-overlay" id="loading-overlay">
-        <div class="spinner"></div>
+        <div class="loading-spinner"></div>
         <div class="loading-text" id="loading-text">Thinking...</div>
     </div>
 
-    <!-- ========== UPLOAD OVERLAY ========== -->
-    <div class="upload-overlay" id="upload-overlay">
-        <div class="upload-card glass-card">
-            <h2>Welcome to Study.AI</h2>
-            <p>Upload your course PDFs or PPTs to build your personalized AI study assistant.</p>
-            <input type="file" id="document-upload" accept=".pdf,.ppt,.pptx" multiple class="file-input">
-            <button class="btn btn-primary" onclick="handleUpload()" id="upload-btn">Upload & Index files</button>
-            <div id="upload-status" class="upload-status mt-1"></div>
+    <!-- ===== UPLOAD MODAL ===== -->
+    <div class="modal-overlay" id="upload-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>Add Study Material</h2>
+                <button class="icon-btn" onclick="hideUploadOverlay()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <p class="modal-subtitle">Upload PDFs, presentations, or images to build your AI study index. New files will be added to your existing library.</p>
+            <div class="upload-drop-zone" id="upload-drop-zone">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Drop files here or click to browse</span>
+                <input type="file" id="file-upload" accept=".pdf,.ppt,.pptx,.jpg,.jpeg,.png" multiple onchange="handleFileSelection(event)">
+            </div>
+            <div class="upload-or">or</div>
+            <label class="upload-folder-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                Choose Folder
+                <input type="file" id="folder-upload" webkitdirectory mozdirectory style="display:none" onchange="handleFileSelection(event)">
+            </label>
+            <div id="staged-files-container" class="staged-files" style="display:none">
+                <div class="staged-header"><span id="staged-count">0</span> files selected</div>
+                <ul id="staged-files-list"></ul>
+            </div>
+            <button class="primary-btn" onclick="handleUpload()" id="upload-btn" disabled>Upload & Build Index</button>
+            <div id="upload-status" class="upload-status"></div>
         </div>
     </div>
 
-    <!-- ========== TOAST CONTAINER ========== -->
+    <!-- ===== TOAST ===== -->
     <div class="toast-container" id="toast-container"></div>
 
-    <!-- ========== SCRIPTS ========== -->
-    <!-- Marked.js for Markdown rendering -->
+    <!-- ===== SCRIPTS ===== -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- D3.js for Mind Map visualization -->
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-    <!-- html2canvas for exports -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- App -->
     <script src="/static/js/app.js"></script>
-
 </body>
 </html>

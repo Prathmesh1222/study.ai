@@ -6,6 +6,7 @@ Serves the Apple-inspired web frontend and provides RAG API endpoints.
 import json
 import re
 import os
+import sys
 import base64
 import time
 import anyio
@@ -18,7 +19,7 @@ import faiss
 import numpy as np
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer, CrossEncoder
@@ -36,7 +37,7 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_DIR = BASE_DIR / "models"
-INDEX_PATH = MODEL_DIR / "java_faiss.index"
+INDEX_PATH = MODEL_DIR / "study_faiss.index"
 META_PATH = MODEL_DIR / "metadata.json"
 FLASHCARD_PATH = BASE_DIR / "flashcards.json"
 STATIC_DIR = BASE_DIR / "static"
@@ -134,11 +135,20 @@ class LLMFallback:
 
     def generate_content(self, prompt, **kwargs):
         """Sync wrapper for compatibility with legacy engines."""
-        # This is for the engines that haven't been updated to async yet
         idx = self.current_index
         model_info = self.model_pool[idx]
         genai.configure(api_key=model_info["key"])
         return model_info["model"].generate_content(prompt, **kwargs)
+
+    def generate_content_stream(self, prompt, **kwargs):
+        """Sync streaming wrapper - yields text chunks."""
+        idx = self.current_index
+        model_info = self.model_pool[idx]
+        genai.configure(api_key=model_info["key"])
+        response = model_info["model"].generate_content(prompt, stream=True, **kwargs)
+        for chunk in response:
+            if chunk.text:
+                yield chunk.text
 
 
 # Initialize fallback LLM
@@ -195,22 +205,27 @@ class QueryRequest(BaseModel):
     use_hyde: bool = False
     use_rerank: bool = True
     top_k: int = 6
+    allowed_docs: list[str] | None = None
+    chat_history: list[dict[str, str]] = []
 
 class QuizRequest(BaseModel):
     query: str
     num_questions: int = 5
     use_hyde: bool = False
     use_rerank: bool = True
+    allowed_docs: list[str] | None = None
 
 class FlashcardRequest(BaseModel):
     query: str
     use_hyde: bool = False
     use_rerank: bool = True
+    allowed_docs: list[str] | None = None
 
 class MindMapRequest(BaseModel):
     query: str
     use_hyde: bool = False
     use_rerank: bool = True
+    allowed_docs: list[str] | None = None
 
 class TTSRequest(BaseModel):
     text: str
@@ -223,6 +238,7 @@ class ELI5Request(BaseModel):
     query: str
     use_hyde: bool = False
     use_rerank: bool = True
+    allowed_docs: list[str] | None = None
 
 class GapAnalysisRequest(BaseModel):
     history: list[str]
@@ -230,7 +246,7 @@ class GapAnalysisRequest(BaseModel):
 # ==================================================
 # 5. CORE RAG FUNCTIONS
 # ==================================================
-async def retrieve_context(query: str, top_k: int = 6, use_hyde: bool = False, use_rerank: bool = True):
+async def retrieve_context(query: str, top_k: int = 6, use_hyde: bool = False, use_rerank: bool = True, allowed_docs: list[str] | None = None):
     """Retrieve relevant context from FAISS index."""
     t0 = time.time()
     if index is None:
@@ -246,8 +262,9 @@ async def retrieve_context(query: str, top_k: int = 6, use_hyde: bool = False, u
         print(f"⏱️  HyDE took: {time.time() - th:.2f}s")
 
     t_emb = time.time()
-    # Optimization: Reduce search pool for faster reranking on CPU
-    fetch_k = top_k * 2 if use_rerank else top_k
+    
+    # Increase search pool slightly to account for filtered out docs
+    fetch_k = top_k * 4 if use_rerank or allowed_docs else top_k
     
     # Offload encoding to thread pool
     vec = await anyio.to_thread.run_sync(lambda: embedder.encode([search_query]).astype("float32"))
@@ -257,7 +274,16 @@ async def retrieve_context(query: str, top_k: int = 6, use_hyde: bool = False, u
     candidates = []
     for idx in idxs[0]:
         if idx != -1 and idx < len(chunks):
-            candidates.append(chunks[idx])
+            chunk = chunks[idx]
+            # Filter by selected documents
+            if allowed_docs:
+                source_file = chunk.get("metadata", {}).get("source_file", chunk.get("source", "Unknown"))
+                if source_file not in allowed_docs:
+                    continue
+            candidates.append(chunk)
+
+    # After filtering, limit to fetch_k again if it got too large, but usually it's small
+    candidates = candidates[:(top_k * 2)] if use_rerank else candidates[:top_k]
 
     if use_rerank and candidates:
         tr = time.time()
@@ -313,30 +339,77 @@ async def api_status():
     """Check if the FAISS index is loaded."""
     return {"has_index": index is not None and len(chunks) > 0}
 
+@app.get("/api/documents")
+async def api_documents():
+    """Return list of unique document source names from the loaded chunks."""
+    if not chunks:
+        return {"documents": []}
+    docs = list(set([c.get("metadata", {}).get("source_file", "Unknown") for c in chunks]))
+    return {"documents": docs}
+
 @app.post("/api/upload")
 async def api_upload(files: list[UploadFile] = File(...)):
     """Upload documents and trigger processing pipeline."""
+    # --- Clear global memory immediately ---
+    global index, chunks
+    index = None
+    chunks = []
+
+    # --- Ensure raw upload dirs exist (do NOT clear — accumulate files) ---
     raw_pdf_dir = BASE_DIR / "data" / "raw" / "pdf"
-    raw_pdf_dir.mkdir(parents=True, exist_ok=True)
+    raw_ppt_dir = BASE_DIR / "data" / "raw" / "ppt"
+    raw_img_dir = BASE_DIR / "data" / "raw" / "images"
+    for d in [raw_pdf_dir, raw_ppt_dir, raw_img_dir]:
+        d.mkdir(parents=True, exist_ok=True)
+
+    # --- Clear derived data so pipeline rebuilds from ALL raw files ---
+    dirs_to_clear = [
+        BASE_DIR / "data" / "extracted_text",
+        BASE_DIR / "data" / "cleaned_text",
+        BASE_DIR / "data" / "chunks",
+    ]
+    for d in dirs_to_clear:
+        if d.exists():
+            shutil.rmtree(d)
+        d.mkdir(parents=True, exist_ok=True)
+    
+    # Clean old FAISS index files
+    for f in [MODEL_DIR / "java_faiss.index", MODEL_DIR / "study_faiss.index", MODEL_DIR / "metadata.json"]:
+        if f.exists():
+            f.unlink()
+
+    raw_pdf_dir = BASE_DIR / "data" / "raw" / "pdf"
+    raw_ppt_dir = BASE_DIR / "data" / "raw" / "ppt"
+    raw_img_dir = BASE_DIR / "data" / "raw" / "images"
     
     saved_files = []
     for file in files:
-        if file.filename.endswith(".pdf"):
+        name = file.filename.lower()
+        if name.endswith(".pdf"):
             save_path = raw_pdf_dir / file.filename
-            with open(save_path, "wb") as buffer:
-                shutil.copyfileobj(file.file, buffer)
-            saved_files.append(file.filename)
+        elif name.endswith((".ppt", ".pptx")):
+            save_path = raw_ppt_dir / file.filename
+        elif name.endswith((".jpg", ".jpeg", ".png")):
+            save_path = raw_img_dir / file.filename
+        else:
+            continue
+
+        with open(save_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        saved_files.append(file.filename)
             
     if not saved_files:
-        raise HTTPException(status_code=400, detail="No valid PDF files uploaded. Please upload PDFs.")
+        raise HTTPException(status_code=400, detail="No valid supported files uploaded.")
         
     try:
         print("🚀 Starting data processing pipeline...")
         env = os.environ.copy()
-        python_exec = "venv/bin/python" if os.path.exists("venv/bin/python") else "python3"
+        python_exec = sys.executable
         
         scripts = [
             "scripts/pdf_loader.py",
+            "scripts/ppt_loader.py",
+            "scripts/image_ocr.py",
             "scripts/clean_text.py",
             "scripts/chunker.py",
             "scripts/build_faiss_index.py"
@@ -370,28 +443,96 @@ async def serve_index():
 async def api_query(req: QueryRequest):
     """General RAG query endpoint."""
     t_start = time.time()
-    ctx, smap, raw = await retrieve_context(
-        req.query, use_hyde=req.use_hyde, use_rerank=req.use_rerank, top_k=req.top_k
-    )
+    
+    # Optional kwargs based on what retrieve_context expects
+    retrieve_kwargs = {
+        "use_hyde": req.use_hyde,
+        "use_rerank": req.use_rerank,
+        "allowed_docs": req.allowed_docs
+    }
+    
+    ctx, smap, raw = await retrieve_context(req.query, **retrieve_kwargs)
+
+    history_str = ""
+    if req.chat_history:
+        history_str = "Previous Conversation:\n"
+        for msg in req.chat_history:
+            role = "Student" if msg["role"] == "user" else "Professor"
+            history_str += f"{role}: {msg['content']}\n"
 
     prompt = f"""
-    Role: Java Professor.
+    Role: Expert AI Study Assistant and Professor.
+    {history_str}
+    
     Context: {ctx}
     Question: {req.query}
     
-    Task: Provide a detailed theoretical answer based on the context.
+    Task: Provide a detailed theoretical answer. 
+    - VERY IMPORTANT: If the answer requires information not found in the Context provided above, you MUST start your response by clearly stating: "I am going beyond the uploaded material to answer this."
     - Use clear headings.
-    - Include at least one relevant Java code example (if applicable).
-    - Use citations like [1], [2] based on the sources.
+    - Include at least one relevant code example (if applicable).
+    - Use citations like [1], [2] based on the sources when using the Context.
+    - If the user is asking a follow-up question, use the Previous Conversation to understand their intent.
     """
     try:
         t_ai = time.time()
         response = await llm.generate_content_async(prompt)
-        print(f"⏱️  AI Generation (Theory) took: {time.time() - t_ai:.2f}s")
-        print(f"✨ Total request time: {time.time() - t_start:.2f}s")
+        print(f"\u23f1\ufe0f  AI Generation (Theory) took: {time.time() - t_ai:.2f}s")
+        print(f"\u2728 Total request time: {time.time() - t_start:.2f}s")
         return {"answer": response.text, "sources": smap, "raw_context": raw}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/query/stream")
+async def api_query_stream(req: QueryRequest):
+    """SSE streaming version of the RAG query endpoint."""
+    t_start = time.time()
+
+    retrieve_kwargs = {
+        "use_hyde": req.use_hyde,
+        "use_rerank": req.use_rerank,
+        "allowed_docs": req.allowed_docs
+    }
+
+    ctx, smap, raw = await retrieve_context(req.query, **retrieve_kwargs)
+
+    history_str = ""
+    if req.chat_history:
+        history_str = "Previous Conversation:\n"
+        for msg in req.chat_history:
+            role = "Student" if msg["role"] == "user" else "Professor"
+            history_str += f"{role}: {msg['content']}\n"
+
+    prompt = f"""
+    Role: Expert AI Study Assistant and Professor.
+    {history_str}
+    
+    Context: {ctx}
+    Question: {req.query}
+    
+    Task: Provide a detailed theoretical answer. 
+    - VERY IMPORTANT: If the answer requires information not found in the Context provided above, you MUST start your response by clearly stating: "I am going beyond the uploaded material to answer this."
+    - Use clear headings.
+    - Include at least one relevant code example (if applicable).
+    - Use citations like [1], [2] based on the sources when using the Context.
+    - If the user is asking a follow-up question, use the Previous Conversation to understand their intent.
+    """
+
+    async def event_generator():
+        try:
+            for chunk in llm.generate_content_stream(prompt):
+                # Escape newlines for SSE format
+                escaped = chunk.replace("\n", "\\n")
+                yield f"data: {escaped}\n\n"
+            # Send sources as final event
+            yield f"event: sources\ndata: {json.dumps(smap)}\n\n"
+            yield f"event: done\ndata: complete\n\n"
+            print(f"\u2728 Streamed response in {time.time() - t_start:.2f}s")
+        except Exception as e:
+            yield f"event: error\ndata: {str(e)}\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 
 @app.post("/api/eli5")

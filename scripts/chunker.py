@@ -24,15 +24,17 @@ def chunk_text(text, chunk_size=CHUNK_SIZE):
 def extract_metadata(text, filename):
     unit = "Unknown"
     topic = "Unknown"
+    source = filename
 
     for line in text.splitlines():
         if line.startswith("[UNIT:"):
             unit = line.replace("[UNIT:", "").replace("]", "").strip()
-        if line.startswith("TOPIC:"):
+        elif line.startswith("TOPIC:"):
             topic = line.replace("TOPIC:", "").strip()
-            break
+        elif line.startswith("[FILE:"):
+            source = line.replace("[FILE:", "").replace("]", "").strip()
 
-    return unit, topic, filename
+    return unit, topic, source
 
 
 def process_files():
@@ -64,7 +66,7 @@ def process_files():
             }
             all_chunks.append(chunk_obj)
 
-    output_file = OUTPUT_DIR / "java_chunks.json"
+    output_file = OUTPUT_DIR / "study_chunks.json"
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(all_chunks, f, indent=2)
 
@@ -74,3 +76,4 @@ def process_files():
 
 if __name__ == "__main__":
     process_files()
+

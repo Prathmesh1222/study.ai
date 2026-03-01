@@ -6,7 +6,7 @@ from sentence_transformers import SentenceTransformer
 
 # Base paths
 BASE_DIR = Path(__file__).resolve().parent.parent
-CHUNKS_FILE = BASE_DIR / "data" / "chunks" / "java_chunks.json"
+CHUNKS_FILE = BASE_DIR / "data" / "chunks" / "study_chunks.json"
 MODEL_DIR = BASE_DIR / "models"
 
 MODEL_DIR.mkdir(parents=True, exist_ok=True)
@@ -35,7 +35,7 @@ index = faiss.IndexFlatL2(dimension)
 index.add(embeddings)
 
 # Save FAISS index
-faiss.write_index(index, str(MODEL_DIR / "java_faiss.index"))
+faiss.write_index(index, str(MODEL_DIR / "study_faiss.index"))
 
 # Save metadata
 with open(MODEL_DIR / "metadata.json", "w", encoding="utf-8") as f:
@@ -43,5 +43,5 @@ with open(MODEL_DIR / "metadata.json", "w", encoding="utf-8") as f:
 
 print("✅ STEP 2.1 COMPLETE")
 print("📁 Saved:")
-print(" - models/java_faiss.index")
+print(" - models/study_faiss.index")
 print(" - models/metadata.json")
