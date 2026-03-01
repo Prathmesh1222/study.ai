@@ -1,6 +1,6 @@
 # Cyphraxi — AI-Powered Study Engine
 
-An intelligent RAG (Retrieval-Augmented Generation) study engine with a premium **Apple-inspired dark UI**. Upload your course materials and get **streamed** AI-powered theory answers, mind maps, quizzes, and flashcards — all grounded in your actual documents. No hallucinations, just pure data.
+An intelligent RAG (Retrieval-Augmented Generation) study engine with a premium **modern UI** supporting both light and dark themes. Upload your course materials and get **streamed** AI-powered theory answers, mind maps, quizzes, and flashcards — all grounded in your actual documents. No hallucinations, just pure data.
 
 ## Features
 
@@ -52,7 +52,7 @@ cyphraxi/
 ├── setup_data.py                # Automated data pipeline runner
 ├── static/
 │   ├── index.html               # Single-page application
-│   ├── css/style.css            # Apple dark mode design system
+│   ├── css/style.css            # Design system (light + dark themes)
 │   └── js/app.js                # Client logic + SSE stream consumer
 ├── scripts/
 │   ├── pdf_loader.py            # Extract text from PDFs
@@ -118,16 +118,16 @@ Open **http://localhost:8000**
 
 ## Tech Stack
 
-| Layer          | Technology                                     |
-| -------------- | ---------------------------------------------- |
-| **Frontend**   | HTML, CSS (Apple dark mode), JavaScript, D3.js |
-| **Backend**    | FastAPI + Uvicorn, SSE streaming               |
-| **LLM**        | Google Gemini (multi-key rotation)             |
-| **Embeddings** | sentence-transformers (all-MiniLM-L6-v2)       |
-| **Reranking**  | CrossEncoder (ms-marco-MiniLM-L-6-v2)          |
-| **Vector DB**  | FAISS                                          |
-| **TTS**        | gTTS                                           |
-| **OCR**        | pytesseract + Pillow                           |
+| Layer          | Technology                                       |
+| -------------- | ------------------------------------------------ |
+| **Frontend**   | HTML, CSS (light/dark themes), JavaScript, D3.js |
+| **Backend**    | FastAPI + Uvicorn, SSE streaming                 |
+| **LLM**        | Google Gemini (multi-key rotation)               |
+| **Embeddings** | sentence-transformers (all-MiniLM-L6-v2)         |
+| **Reranking**  | CrossEncoder (ms-marco-MiniLM-L-6-v2)            |
+| **Vector DB**  | FAISS                                            |
+| **TTS**        | gTTS                                             |
+| **OCR**        | pytesseract + Pillow                             |
 
 ## How It Works
 
