@@ -28,6 +28,22 @@ An intelligent RAG (Retrieval-Augmented Generation) study engine with a premium 
 
 ![Chat Response](screenshots/chat.png)
 
+### Mind Map
+
+![Mind Map](screenshots/mindmap.png)
+
+### Quiz Mode
+
+![Quiz](screenshots/quiz.png)
+
+### Flashcards (SRS)
+
+![Flashcards](screenshots/flashcards.png)
+
+### Gap Analysis
+
+![Gap Analysis](screenshots/gap_analysis.png)
+
 ## Architecture
 
 ```
