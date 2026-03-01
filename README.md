@@ -18,6 +18,16 @@ An intelligent RAG (Retrieval-Augmented Generation) study engine with a premium 
 | **Per-Chat Sources**     | Toggle/remove documents per chat from sidebar                        |
 | **HyDE + Reranking**     | Advanced retrieval with hypothetical embeddings & cross-encoder      |
 
+## Screenshots
+
+### Welcome Screen
+
+![Welcome Screen](screenshots/welcome.png)
+
+### Chat Response with Streaming
+
+![Chat Response](screenshots/chat.png)
+
 ## Architecture
 
 ```
