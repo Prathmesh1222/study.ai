@@ -1,5 +1,5 @@
 """
-📥 Study.AI - Data Setup Script
+Cyphraxi - Data Setup Script
 
 Downloads the raw study materials (PDFs/PPTs) from cloud storage.
 This is OPTIONAL - the app works without raw data since pre-built
@@ -87,7 +87,7 @@ def download_from_huggingface():
 
 def main():
     print("=" * 50)
-    print("📚 Study.AI - Data Setup")
+    print("Cyphraxi - Data Setup")
     print("=" * 50)
 
     # Check if raw data already exists

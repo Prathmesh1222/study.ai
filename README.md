@@ -1,27 +1,27 @@
-# Study.AI — AI-Powered Study Assistant
+# Cyphraxi — AI-Powered Study Engine
 
-An intelligent RAG (Retrieval-Augmented Generation) study assistant with a premium **Apple-inspired dark UI**. Upload your course materials and get **streamed** AI-powered theory answers, mind maps, quizzes, and flashcards — all grounded in your actual documents.
+An intelligent RAG (Retrieval-Augmented Generation) study engine with a premium **Apple-inspired dark UI**. Upload your course materials and get **streamed** AI-powered theory answers, mind maps, quizzes, and flashcards — all grounded in your actual documents. No hallucinations, just pure data.
 
 ## Features
 
-| Feature                   | Description                                                     |
-| ------------------------- | --------------------------------------------------------------- |
-| **Theory Answers**        | Streamed token-by-token with inline citations and references    |
-| **ELI5 Mode**             | Complex topics explained as simple everyday analogies           |
-| **Interactive Mind Maps** | D3.js hierarchical trees with color-coded nodes and zoom        |
-| **Practice Quizzes**      | AI-generated MCQs with instant explanations                     |
-| **Flashcards (SRS)**      | 3D flip animation with SuperMemo-2 mastery tracking             |
-| **Text-to-Speech**        | Listen to any answer with built-in TTS                          |
-| **Voice Input**           | Ask questions using your microphone                             |
-| **Gap Analysis**          | Personalized learning roadmap from your search patterns         |
-| **SSE Streaming**         | Token-by-token response rendering with skeleton loader          |
-| **Per-Chat Sources**      | Toggle/remove documents per chat from sidebar                   |
-| **HyDE + Reranking**      | Advanced retrieval with hypothetical embeddings & cross-encoder |
+| Feature                  | Description                                                          |
+| ------------------------ | -------------------------------------------------------------------- |
+| **Axiomatic RAG**        | Streamed token-by-token answers with inline citations from your docs |
+| **ELI5 Mode**            | Complex topics explained as simple everyday analogies                |
+| **Concept Entanglement** | D3.js hierarchical mind maps with color-coded nodes and zoom         |
+| **Practice Quizzes**     | AI-generated MCQs with instant explanations                          |
+| **Flashcards (SRS)**     | 3D flip animation with SuperMemo-2 mastery tracking                  |
+| **Text-to-Speech**       | Listen to any answer with built-in TTS                               |
+| **Voice Input**          | Ask questions using your microphone                                  |
+| **Gap Analysis**         | Personalized learning roadmap from your search patterns              |
+| **SSE Streaming**        | Token-by-token response rendering with skeleton loader               |
+| **Per-Chat Sources**     | Toggle/remove documents per chat from sidebar                        |
+| **HyDE + Reranking**     | Advanced retrieval with hypothetical embeddings & cross-encoder      |
 
 ## Architecture
 
 ```
-study-ai/
+cyphraxi/
 ├── server.py                    # FastAPI backend + SSE streaming endpoint
 ├── setup_data.py                # Automated data pipeline runner
 ├── static/
@@ -115,8 +115,8 @@ User Query → HyDE (optional) → Vector Search → Rerank → LLM (Gemini)
 
 ## License
 
-Open source — use and modify freely for your studies.
+Open source — use and modify freely.
 
 ---
 
-**Built by students, for students.**
+**Built by engineers, for engineers.**

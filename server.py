@@ -1,5 +1,5 @@
 """
-⚡ Study.AI — FastAPI Backend Server
+Cyphraxi — FastAPI Backend Server
 Serves the Apple-inspired web frontend and provides RAG API endpoints.
 """
 
@@ -184,7 +184,7 @@ load_index_data()
 # ==================================================
 # 3. FASTAPI APP
 # ==================================================
-app = FastAPI(title="Study.AI", version="2.0")
+app = FastAPI(title="Cyphraxi", version="2.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -725,6 +725,6 @@ async def api_gap_analysis(req: GapAnalysisRequest):
 # ==================================================
 if __name__ == "__main__":
     import uvicorn
-    print("\n⚡ Study.AI Server starting...")
+    print("\n⚡ Cyphraxi Server starting...")
     print("🌐 Open http://localhost:8000 in your browser\n")
     uvicorn.run(app, host="0.0.0.0", port=8000)
