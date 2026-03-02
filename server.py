@@ -37,7 +37,7 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_DIR = BASE_DIR / "models"
-INDEX_PATH = MODEL_DIR / "study_faiss.index"
+INDEX_PATH = MODEL_DIR / "faiss.index"
 META_PATH = MODEL_DIR / "metadata.json"
 FLASHCARD_PATH = BASE_DIR / "flashcards.json"
 STATIC_DIR = BASE_DIR / "static"
@@ -374,7 +374,7 @@ async def api_upload(files: list[UploadFile] = File(...)):
         d.mkdir(parents=True, exist_ok=True)
     
     # Clean old FAISS index files
-    for f in [MODEL_DIR / "java_faiss.index", MODEL_DIR / "study_faiss.index", MODEL_DIR / "metadata.json"]:
+    for f in [MODEL_DIR / "faiss.index", MODEL_DIR / "metadata.json"]:
         if f.exists():
             f.unlink()
 

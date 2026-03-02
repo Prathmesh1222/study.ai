@@ -1117,6 +1117,9 @@ function updateAllowedDocsFromPanel() {
     renderDocChips(chat);
     saveChats();
   }
+
+  // Clear chat history so AI doesn't reference deselected documents
+  state.chatHistory = [];
 }
 
 function showUploadOverlay() {

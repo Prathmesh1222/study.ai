@@ -7,7 +7,7 @@ from sentence_transformers import SentenceTransformer
 BASE_DIR = Path(__file__).resolve().parent.parent
 MODEL_DIR = BASE_DIR / "models"
 
-INDEX_PATH = MODEL_DIR / "study_faiss.index"
+INDEX_PATH = MODEL_DIR / "faiss.index"
 META_PATH = MODEL_DIR / "metadata.json"
 
 # Load embedding model

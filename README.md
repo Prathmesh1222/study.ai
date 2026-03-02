@@ -72,7 +72,7 @@ cyphraxi/
 │   ├── cleaned_text/            # Cleaned text output
 │   └── chunks/                  # Final chunked JSON
 ├── models/                      # Generated at runtime (gitignored)
-│   ├── study_faiss.index        # FAISS vector index
+│   ├── faiss.index              # FAISS vector index
 │   └── metadata.json            # Chunk metadata
 ├── requirements.txt
 └── .env                         # API keys (not committed)

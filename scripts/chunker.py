@@ -66,7 +66,7 @@ def process_files():
             }
             all_chunks.append(chunk_obj)
 
-    output_file = OUTPUT_DIR / "study_chunks.json"
+    output_file = OUTPUT_DIR / "chunks.json"
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(all_chunks, f, indent=2)
 
