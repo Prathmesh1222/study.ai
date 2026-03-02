@@ -725,6 +725,10 @@ async def api_gap_analysis(req: GapAnalysisRequest):
 # ==================================================
 if __name__ == "__main__":
     import uvicorn
+
+    # Read the PORT environment variable provided by Render, default to 8000 locally
+    port = int(os.environ.get("PORT", 8000))
+
     print("\n⚡ Cyphraxi Server starting...")
-    print("🌐 Open http://localhost:8000 in your browser\n")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    print(f"🌐 Server running on port {port}\n")
+    uvicorn.run(app, host="0.0.0.0", port=port)
